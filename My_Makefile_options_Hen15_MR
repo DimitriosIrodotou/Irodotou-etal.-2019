@@ -1,0 +1,126 @@
+# List of Makefile options. See also routine "check_options" in main.c...
+
+#########################################
+### Options that control the SA model ###
+#########################################
+OPT += -DUPDATETYPETWO      # This updates the positions of type 2 galaxies when the galaxies are written to file.
+OPT += -DDISRUPTION         # Instantaneously and completely disrupt type 2s.
+OPT += -DMERGE01            # allows type 1s to merge with type 0s.
+
+###################################
+### Options that control output ###
+###################################
+OPT += -DHDF5_OUTPUT            # Output the data in HDF5 format.
+
+ifeq (HDF5_OUTPUT,$(findstring HDF5_OUTPUT,$(OPT)))
+
+OBJS += /Users/Bam/ClionProjects/ITH18/io_hdf5.o
+OPT += -DNRECORDS_APP=1000      # Number of galaxies to append at a time.
+OPT += -DCOMPRESS=0             # 1 to turn compression on and 0 to turn it off.
+OPT += -DCHUNK_SIZE=1000        # Size of chunk for hdf5 to output the data (optimised).
+
+endif # HDF5
+
+OPT += -DOVERWRITE_OUTPUT       # Overwrite output files if they exist (otherwise will quit without overwriting).
+OPT += -DNOUT=1                # This sets the number of galaxy output times. IGNORED IN GALAXYTREE MODE. VALUE
+                                # CORRESPONDS TO NO. OF ROWS READ FROM desired_outputsnaps FILE.
+
+###################################################
+### Options that control speed and memory usage ###
+###################################################
+OPT += -DSAVE_MEMORY        # We do NOT use the 64/68-elements array Sfr/SfrBulge when calculating galaxy trees.
+#OPT += -DPARALLEL
+
+####################################################
+### To run with different dark matter simulation ###
+####################################################
+#OPT += -DMRII
+
+#####################################################################################################
+### record star formation histories - used for post-process mags and detailed chemical enrichment ###
+#####################################################################################################
+#OPT += -DSTAR_FORMATION_HISTORY
+
+ifeq (STAR_FORMATION_HISTORY,$(findstring STAR_FORMATION_HISTORY,$(OPT)))
+
+#OPT += -DNORMALIZEDDB      # Currently does not write sfh_time and sfh_dt to galaxies records, but writes separate CSV
+                            # file with relevant bin information.
+OBJS += /Users/Bam/ClionProjects/ITH18/star_formation_history.o
+
+endif # STAR_FORMATION_HISTORY
+
+###########################
+### SPECPHOT_PROPERTIES ###
+###########################
+OPT += -DCOMPUTE_SPECPHOT_PROPERTIES
+
+ifeq (COMPUTE_SPECPHOT_PROPERTIES,$(findstring COMPUTE_SPECPHOT_PROPERTIES,$(OPT)))
+
+OBJS += /Users/Bam/ClionProjects/ITH18/model_spectro_photometric.o
+OPT += -DOUTPUT_REST_MAGS       # Output rest-frame magnitudes.
+#OPT += -DCOMPUTE_OBS_MAGS      # Compute observer-frame magnitudes.
+#OPT += -DOUTPUT_OBS_MAGS       # Adds observer-frame magnitudes to the standard outptus (either tree or snapshot
+                                # formats).
+#OPT += -DICL                   # Output magnitudes for ICL.
+
+###################################################
+### Options that control the Spectral synthesis ###
+###################################################
+OPT += -DM05        # Use Maraston 2005 stellar populations need to change input.par
+#OPT += -DBC03      # Use Bruzual & Charlot 2003 stellar populations need to change input.par
+#OPT += -DCB07      # Use Charlot & Bruzual 2007 stellar populations need to change input.par
+OPT += -DPHOTTABLES_PRECOMPUTED
+
+#########################
+### POST PROCESS MAGS ###
+#########################
+ifeq (STAR_FORMATION_HISTORY,$(findstring STAR_FORMATION_HISTORY,$(OPT)))
+
+OPT += -DPOST_PROCESS_MAGS
+
+ifeq (POST_PROCESS_MAGS,$(findstring POST_PROCESS_MAGS,$(OPT)))
+
+OBJS += /Users/Bam/ClionProjects/ITH18/post_process_spec_mags.o
+
+endif # POST_PROCESS_MAGS
+endif # STAR_FORMATION_HISTORY
+
+###################
+### Define NMAG ###
+###################
+OPT += -DNMAG=5
+#OPT += -DNMAG=40
+
+endif # COMPUTE_SPECPHOT_PROPERTIES
+
+##################################################
+### Option to switch on MCMC parameter hunting ###
+##################################################
+#OPT += -DMCMC
+ifeq (MCMC,$(findstring MCMC,$(OPT)))
+
+OBJS += /Users/Bam/ClionProjects/ITH18/mcmc.o
+OBJS += /Users/Bam/ClionProjects/ITH18/save_mcmc.o
+INCL += /Users/Bam/ClionProjects/ITH18/mcmc_vars.h
+INCL += /Users/Bam/ClionProjects/ITH18/mcmc_proto.h
+
+endif # MCMC
+
+#########################################
+### Options to switch on DI's changes ###
+#########################################
+OPT += -DDI_BULGESPIN           # Track the spun of the bulge
+OPT += -DDI_BULGESIZE           # Enable the new bulge size as described in ITH18.
+OPT += -DDI_GASSPIN             # Enable the transfer of angular momentum from the gas disk to the halo.
+OPT += -DDI_INSTABILITIES       # Enable the treatment of instabilities in both gaseous and stellar disk.
+#OPT += -DDI_MERGERS            # TODO: probably I'll get rid of that!
+
+#########################
+### Debugging options ###
+#########################
+#OPT += -DBULGESIZE_DEBUG
+#OPT += -DLOADIDS             # Load dbids files.
+#OPT += -DDEBUG               # Switch on debug compilation flags.
+#OPT += -DMASS_CHECKS         # Check for mass conservation at every stage of galaxy building.
+#OPT += -DGALAXYTREE          # This will enable output of full galaxy merger trees, implicitly sets NOUT to maximum
+                              # value.
