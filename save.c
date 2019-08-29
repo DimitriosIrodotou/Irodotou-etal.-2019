@@ -51,32 +51,32 @@
 
 
 /** @brief Create output files - snapshot option																	  */
-void create_galaxy_files( int filenr ) {
+void create_galaxy_files (int filenr) {
 	int n, i;
-	
-	#ifdef HDF5_OUTPUT
+
+#ifdef HDF5_OUTPUT
 	open_hdf5_file(filenr);
-	#else //HDF5_OUTPUT
+#else //HDF5_OUTPUT
 	// create output files - snapshot option
 	char buf[1000];
-	#endif //HDF5_OUTPUT
-	
-	for ( n = 0; n < NOUT; n ++ ) {
-		for ( i = 0; i < Ntrees; i ++ ) {
+#endif //HDF5_OUTPUT
+
+	for (n = 0; n < NOUT; n ++) {
+		for (i = 0; i < Ntrees; i ++) {
 			TreeNgals[n][i] = 0;
 		}
-		#ifdef HDF5_OUTPUT
+#ifdef HDF5_OUTPUT
 		create_hdf5_table(n);
-		#else // HDF5_OUTPUT
-		sprintf(buf, "%s/%s_z%1.2f_%d", OutputDir, FileNameGalaxies, ZZ[ListOutputSnaps[n]], filenr);
-		if ( ! (FdGalDumps[n] = fopen(buf, "w+"))) {
+#else // HDF5_OUTPUT
+		sprintf (buf, "%s/%s_z%1.2f_%d", OutputDir, FileNameGalaxies, ZZ[ListOutputSnaps[n]], filenr);
+		if (! (FdGalDumps[n] = fopen (buf, "w+"))) {
 			char sbuf[1000];
-			sprintf(sbuf, "can't open file `%s'\n", buf);
+			sprintf (sbuf, "can't open file `%s'\n", buf);
 			terminate(sbuf);
 		}
-		fseek(FdGalDumps[n], (2 + Ntrees) * sizeof(int), SEEK_SET);
+		fseek (FdGalDumps[n], (2 + Ntrees) * sizeof (int), SEEK_SET);
 		TotGalaxies[n] = 0;
-		#endif //HDF5_OUTPUT
+#endif //HDF5_OUTPUT
 	}
 }
 // end create_galaxy_files
@@ -100,23 +100,23 @@ void create_galaxy_files( int filenr ) {
 
 
 /** @brief 																											  */
-void close_galaxy_files( void ) {
+void close_galaxy_files (void) {
 	int n;
-	
-	#ifdef HDF5_OUTPUT
+
+#ifdef HDF5_OUTPUT
 	for ( n = 0; n < NOUT; n++ ) {
 		hdf5_append_data(n, galaxy_output_hdf5[n], b[n]);
 	} // Output the final galaxies
 	hdf5_close();
-	#else //HDF5_OUTPUT
-	for ( n = 0; n < NOUT; n ++ ) {
-		fseek(FdGalDumps[n], 0, SEEK_SET);
-		myfwrite(&Ntrees, sizeof(int), 1, FdGalDumps[n]);    //Number of trees
-		myfwrite(&TotGalaxies[n], sizeof(int), 1, FdGalDumps[n]);    // total number of galaxies
-		myfwrite(TreeNgals[n], sizeof(int), Ntrees, FdGalDumps[n]);    // Number of galaxies in each tree
-		fclose(FdGalDumps[n]);
+#else //HDF5_OUTPUT
+	for (n = 0; n < NOUT; n ++) {
+		fseek (FdGalDumps[n], 0, SEEK_SET);
+		myfwrite (&Ntrees, sizeof (int), 1, FdGalDumps[n]);    //Number of trees
+		myfwrite (&TotGalaxies[n], sizeof (int), 1, FdGalDumps[n]);    // total number of galaxies
+		myfwrite (TreeNgals[n], sizeof (int), Ntrees, FdGalDumps[n]);    // Number of galaxies in each tree
+		fclose (FdGalDumps[n]);
 	}
-	#endif //HDF5_OUTPUT
+#endif //HDF5_OUTPUT
 }
 // end close_galaxy_files
 
@@ -147,13 +147,13 @@ void close_galaxy_files( void ) {
  *
  * If USE_MEMORY_TO_MINIMIZE_IO ON, this write statements in this routine copy the galaxy data from the working
  * structures into pointers until that has been done for all the tree in a given file.								  */
-void save_galaxy_append( int tree, int i, int n ) {
+void save_galaxy_append (int tree, int i, int n) {
 	struct GALAXY_OUTPUT galaxy_output;
-	
-	#ifndef NORMALIZEDDB
-	prepare_galaxy_for_output(n, &HaloGal[i], &galaxy_output);
-	
-	#ifdef HDF5_OUTPUT
+
+#ifndef NORMALIZEDDB
+	prepare_galaxy_for_output (n, &HaloGal[i], &galaxy_output);
+
+#ifdef HDF5_OUTPUT
 	if ( b[n] < NRECORDS_APP ) {
 		galaxy_output_hdf5[n][b[n]] = galaxy_output;
 		b[n]++;
@@ -163,15 +163,15 @@ void save_galaxy_append( int tree, int i, int n ) {
 		hdf5_append_data(n, galaxy_output_hdf5[n], NRECORDS_APP);
 		b[n] = 0;
 	}
-	#else //HDF5_OUTPUT
-	myfwrite(&galaxy_output, sizeof(struct GALAXY_OUTPUT), 1, FdGalDumps[n]);
-	#endif //HDF5_OUTPUT
-	#endif //NORMALIZEDDB
-	
-	#ifndef HDF5_OUTPUT
+#else //HDF5_OUTPUT
+	myfwrite (&galaxy_output, sizeof (struct GALAXY_OUTPUT), 1, FdGalDumps[n]);
+#endif //HDF5_OUTPUT
+#endif //NORMALIZEDDB
+
+#ifndef HDF5_OUTPUT
 	TotGalaxies[n] ++;      // Total number of galaxies
 	TreeNgals[n][tree] ++;  // Number of galaxies in each tree
-	#endif //HDF5_OUTPUT
+#endif //HDF5_OUTPUT
 }
 // end save_galaxy_append
 
@@ -199,36 +199,36 @@ void save_galaxy_append( int tree, int i, int n ) {
 void prepare_galaxy_for_output(int n, struct GALAXY *g, struct GALAXY_OUTPUT *o, struct SFH_BIN *sfh_bin)
 #else // NORMALIZEDDB
 
-void prepare_galaxy_for_output( int n, struct GALAXY *g, struct GALAXY_OUTPUT *o )
+void prepare_galaxy_for_output (int n, struct GALAXY*g, struct GALAXY_OUTPUT*o)
 #endif // NORMALIZEDDB
 {
 	int j;
-	#ifndef GALAXYTREE
-	#ifdef OUTPUT_RINGS
+#ifndef GALAXYTREE
+#ifdef OUTPUT_RINGS
 	int jj;
-	#endif
-	#ifdef OUTPUT_ELEMENTS
+#endif
+#ifdef OUTPUT_ELEMENTS
 	int kk;
-	#endif
-	#endif
-	
-	#ifndef NO_PROPS_OUTPUTS
+#endif
+#endif
+
+#ifndef NO_PROPS_OUTPUTS
 	o->Type        = g->Type;
 	o->SnapNum     = g->SnapNum;
-	o->CentralMvir = get_virial_mass(Halo[g->HaloNr].FirstHaloInFOFgroup);
-	o->CentralRvir = get_virial_radius(Halo[g->HaloNr].FirstHaloInFOFgroup);
+	o->CentralMvir = get_virial_mass (Halo[g->HaloNr].FirstHaloInFOFgroup);
+	o->CentralRvir = get_virial_radius (Halo[g->HaloNr].FirstHaloInFOFgroup);
 	o->Mvir        = g->Mvir;
 	o->Rvir        = g->Rvir;
 	o->Vvir        = g->Vvir;
-	
-	for ( j = 0; j < 3; j ++ ) {
+
+	for (j = 0; j < 3; j ++) {
 		o->Pos[j]                  = g->Pos[j];
 		o->DistanceToCentralGal[j] = wrap(Halo[Halo[g->HaloNr].FirstHaloInFOFgroup].Pos[j] - g->Pos[j], BoxSize);
 	}
-	
+
 	o->ColdGas     = g->ColdGas;
 	o->StellarMass = g->BulgeMass + g->DiskMass;
-	
+
 	o->DiskMass      = g->DiskMass;
 	o->BulgeMass     = g->BulgeMass;
 	o->PBMass        = g->PBMass;
@@ -237,25 +237,25 @@ void prepare_galaxy_for_output( int n, struct GALAXY *g, struct GALAXY_OUTPUT *o
 	o->CBMass        = g->CBMass;
 	o->HotGas        = g->HotGas;
 	o->BlackHoleMass = g->BlackHoleMass;
-	#ifdef OUTPUT_RINGS
+#ifdef OUTPUT_RINGS
 	o->H2fraction                 = g->H2fraction;
-	#endif // OUTPUT_RINGS
-	#endif // NO_PROPS_OUTPUTS
-	
-	#ifdef COMPUTE_SPECPHOT_PROPERTIES
-	#ifndef POST_PROCESS_MAGS
-	#ifdef OUTPUT_REST_MAGS
+#endif // OUTPUT_RINGS
+#endif // NO_PROPS_OUTPUTS
+
+#ifdef COMPUTE_SPECPHOT_PROPERTIES
+#ifndef POST_PROCESS_MAGS
+#ifdef OUTPUT_REST_MAGS
 	// Luminosities are converted into Mags in various bands.
 	for ( j = 0; j < NMAG; j++ ) {
 		o->Mag[j] = lum_to_mag(g->Lum[j][n]);
 	}
-	#endif // OUTPUT_REST_MAGS
-	#endif // POST_PROCESS_MAGS
-	#endif //COMPUTE_SPECPHOT_PROPERTIES
-	
-	#ifndef LIGHT_OUTPUT
-	#ifndef NO_PROPS_OUTPUTS
-	#ifdef GALAXYTREE
+#endif // OUTPUT_REST_MAGS
+#endif // POST_PROCESS_MAGS
+#endif //COMPUTE_SPECPHOT_PROPERTIES
+
+#ifndef LIGHT_OUTPUT
+#ifndef NO_PROPS_OUTPUTS
+#ifdef GALAXYTREE
 	o->HaloID   = HaloIDs[g->HaloNr].HaloID;
 	o->Redshift = ZZ[g->SnapNum];
 
@@ -267,9 +267,9 @@ void prepare_galaxy_for_output( int n, struct GALAXY *g, struct GALAXY_OUTPUT *o
 
 	o->SubID = calc_big_db_subid_index(g->SnapNum, Halo[g->HaloNr].FileNr, Halo[g->HaloNr].SubhaloIndex);
 
-	#ifdef NIFTY
+#ifdef NIFTY
 	o->FOFCentralID=HaloIDs[g->HaloNr].FirstHaloInFOFgroup;
-	#endif // NIFTY
+#endif // NIFTY
 
 	int tmpfirst = Halo[g->HaloNr].FirstHaloInFOFgroup;
 	int lenmax   = 0;
@@ -283,49 +283,49 @@ void prepare_galaxy_for_output( int n, struct GALAXY *g, struct GALAXY_OUTPUT *o
 	}
 
 	o->MMSubID = calc_big_db_subid_index(g->SnapNum, Halo[tmpfirst].FileNr, Halo[tmpfirst].SubhaloIndex);
-	#endif // GALAXYTREE
-	
-	o->LookBackTimeToSnap = NumToTime(g->SnapNum) * UnitTime_in_years / Hubble_h;
+#endif // GALAXYTREE
+
+	o->LookBackTimeToSnap = NumToTime (g->SnapNum) * UnitTime_in_years / Hubble_h;
 	o->InfallVmax         = g->InfallVmax;
 	o->InfallVmaxPeak     = g->InfallVmaxPeak;
 	o->InfallSnap         = g->InfallSnap;
 	o->InfallHotGas       = g->InfallHotGas;
 	o->HotRadius          = g->HotRadius;
-	#ifdef HALOPROPERTIES
+#ifdef HALOPROPERTIES
 	o->HaloM_Mean200      = g->HaloM_Mean200;
 	o->HaloM_Crit200      = g->HaloM_Crit200;
 	o->HaloM_TopHat       = g->HaloM_TopHat;
 	o->HaloVelDisp        = g->HaloVelDisp;
 	o->HaloVmax           = g->HaloVmax;
-	#endif // HALOPROPERTIES
-	
+#endif // HALOPROPERTIES
+
 	o->Len         = g->Len;
 	o->Vmax        = g->Vmax;
 	o->EjectedMass = CORRECTDBFLOAT(g->EjectedMass);
-	
-	for ( j = 0; j < 3; j ++ ) {
+
+	for (j = 0; j < 3; j ++) {
 		o->Vel[j] = g->Vel[j];
-		#ifdef HALOSPIN
+#ifdef HALOSPIN
 		o->HaloSpin[j] = g->HaloSpin[j];
-		#endif // HALOSPIN
+#endif // HALOSPIN
 		o->ColdGasSpin[j] = g->ColdGasSpin[j];
 		o->DiskSpin[j]    = g->DiskSpin[j];
 		o->BulgeSpin[j]   = g->BulgeSpin[j];
-		
-		#ifdef HALOPROPERTIES
+
+#ifdef HALOPROPERTIES
 		o->HaloPos[j] = g->HaloPos[j];
 		o->HaloVel[j] = g->HaloVel[j];
 		o->HaloSpin[j] = g->HaloSpin[j];
-		#endif // HALOPROPERTIES
+#endif // HALOPROPERTIES
 	}
-	
+
 	o->XrayLum       = g->XrayLum;
 	o->ColdGasRadius = g->ColdGasRadius;
 	o->DiskRadius    = g->DiskRadius;
-	
-	#ifndef RINGS_IN_BULGES
+
+#ifndef RINGS_IN_BULGES
 	o->BulgeSize = g->BulgeSize;
-	#else // RINGS_IN_BULGES
+#else // RINGS_IN_BULGES
 	if ( g->BulgeSize < 1.0e-6 ) {
 		o->BulgeSize = RingRadius[0];
 	}
@@ -334,8 +334,8 @@ void prepare_galaxy_for_output( int n, struct GALAXY *g, struct GALAXY_OUTPUT *o
 		o->BulgeSize += (0.5 * (RingRadius[jj - 1] + RingRadius[jj]) * g->BulgeMassRings[jj]);
 	}
 	o->BulgeSize = 3. * o->BulgeSize / g->BulgeMass / 2.;
-	#endif //OUTPUT_RINGS
-	
+#endif //OUTPUT_RINGS
+
 	o->StellarHalfMassRadius = g->StellarHalfMassRadius;
 	o->CoolingRadius         = g->CoolingRadius;
 	o->ICM                   = g->ICM;
@@ -343,17 +343,16 @@ void prepare_galaxy_for_output( int n, struct GALAXY *g, struct GALAXY_OUTPUT *o
 	o->QuasarAccretionRate   = g->QuasarAccretionRate * UnitMass_in_g / UnitTime_in_s * SEC_PER_YEAR / SOLAR_MASS;
 	o->RadioAccretionRate    = g->RadioAccretionRate * UnitMass_in_g / UnitTime_in_s * SEC_PER_YEAR / SOLAR_MASS;
 	o->CosInclination        = g->CosInclination;
-	
-	#ifndef HT09_DISRUPTION
-	if ( g->Type == 2 || (g->Type == 1 && g->MergeOn == 1)) {
+
+#ifndef HT09_DISRUPTION
+	if (g->Type == 2 || (g->Type == 1 && g->MergeOn == 1)) {
 		o->OriMergTime = g->OriMergTime * UnitTime_in_years / Hubble_h;
 		o->MergTime    = g->MergTime * UnitTime_in_years / Hubble_h;
-	}
-	else {
+	} else {
 		o->OriMergTime = 0.0;
 		o->MergTime    = 0.0;
 	}
-	#else // HT09_DISRUPTION
+#else // HT09_DISRUPTION
 	if(g->Type == 2 || (g->Type == 1 && g->MergeOn == 1)) {
 	   o->OriMergRadius=g->OriMergRadius;
 	   o->MergRadius = g->MergRadius;
@@ -362,62 +361,62 @@ void prepare_galaxy_for_output( int n, struct GALAXY *g, struct GALAXY_OUTPUT *o
 	   o->OriMergRadius=0.0;
 	   o->MergRadius = 0.0;
 	 }
-	#endif // HT09_DISRUPTION
-	
-	#ifdef TRACK_SPLASHBACKS
+#endif // HT09_DISRUPTION
+
+#ifdef TRACK_SPLASHBACKS
 	o->flagSplashBack=g->flagSplashBack;
 	o->TimeSinceSplashBack=g->TimeSinceSplashBack* UnitTime_in_Megayears / 1000. / Hubble_h;
-	#endif // TRACK_SPLASHBACKS
-	
-	#ifndef GALAXYTREE
+#endif // TRACK_SPLASHBACKS
+
+#ifndef GALAXYTREE
 	o->HaloIndex = g->HaloNr;
-	#endif // GALAXYTREE
-	#ifdef MBPID
+#endif // GALAXYTREE
+#ifdef MBPID
 	o->MostBoundID = g->MostBoundID;
-	#endif // MBPID
-	
-	#ifdef GALAXYTREE
+#endif // MBPID
+
+#ifdef GALAXYTREE
 	o->DisruptOn = g->DisruptOn;
-	#endif // GALAXYTREE
-	#ifdef MERGE01
+#endif // GALAXYTREE
+#ifdef MERGE01
 	o->MergeOn = g->MergeOn;
-	#endif // MERGE01
-	
-	
+#endif // MERGE01
+
+
 	//METALS
-	#ifndef   DETAILED_METALS_AND_MASS_RETURN
+#ifndef   DETAILED_METALS_AND_MASS_RETURN
 	o->MetalsColdGas     = CORRECTDBFLOAT(g->MetalsColdGas);
 	o->MetalsStellarMass = CORRECTDBFLOAT(g->MetalsDiskMass) + CORRECTDBFLOAT(g->MetalsBulgeMass);
 	o->MetalsDiskMass    = CORRECTDBFLOAT(g->MetalsDiskMass);
 	o->MetalsBulgeMass   = CORRECTDBFLOAT(g->MetalsBulgeMass);
 	o->MetalsHotGas      = CORRECTDBFLOAT(g->MetalsHotGas);
 	o->MetalsEjectedMass = CORRECTDBFLOAT(g->MetalsEjectedMass);
-	#ifdef METALS_SELF
+#ifdef METALS_SELF
 	o->MetalsHotGasSelf = CORRECTDBFLOAT(g->MetalsHotGasSelf);
-	#endif // METALS_SELF
-	#else // DETAILED_METALS_AND_MASS_RETURN
+#endif // METALS_SELF
+#else // DETAILED_METALS_AND_MASS_RETURN
 	o->MetalsColdGas = g->MetalsColdGas;
 	o->MetalsStellarMass =  metals_add(g->MetalsDiskMass,g->MetalsBulgeMass,1.0);
 	o->MetalsDiskMass = g->MetalsDiskMass;
 	o->MetalsBulgeMass = g->MetalsBulgeMass;
 	o->MetalsHotGas = g->MetalsHotGas;
 	o->MetalsEjectedMass = g->MetalsEjectedMass;
-	#ifdef METALS_SELF
+#ifdef METALS_SELF
 	o->MetalsHotGasSelf = g->MetalsHotGasSelf;
-	#endif // METALS_SELF
-	#endif // DETAILED_METALS_AND_MASS_RETURN
-	
-	#ifdef TRACK_MASSGROWTH_CHANNELS
+#endif // METALS_SELF
+#endif // DETAILED_METALS_AND_MASS_RETURN
+
+#ifdef TRACK_MASSGROWTH_CHANNELS
 	o->MassFromInSitu=g->MassFromInSitu;
 	o->MassFromMergers=g->MassFromMergers;
 	o->MassFromBursts=g->MassFromBursts;
-	#endif // TRACK_MASSGROWTH_CHANNELS
-	
-	#ifdef TRACK_BURST
+#endif // TRACK_MASSGROWTH_CHANNELS
+
+#ifdef TRACK_BURST
 	o->BurstMass=g->BurstMass;
-	#endif // TRACK_BURST
-	
-	#ifdef OUTPUT_RINGS
+#endif // TRACK_BURST
+
+#ifdef OUTPUT_RINGS
 	for(jj=0; jj<RNUM; jj++)
 	{
 		o->H2fractionRings[jj] = g -> H2fractionRings[jj];
@@ -425,20 +424,20 @@ void prepare_galaxy_for_output( int n, struct GALAXY *g, struct GALAXY_OUTPUT *o
 		o->MetalsColdGasRings[jj] = g->MetalsColdGasRings[jj];
 		o->DiskMassRings[jj] = g->DiskMassRings[jj];
 		o->MetalsDiskMassRings[jj] = g->MetalsDiskMassRings[jj];
-		#ifdef RINGS_IN_BULGES
+#ifdef RINGS_IN_BULGES
 		o->BulgeMassRings[jj] = g->BulgeMassRings[jj];
 		o->MetalsBulgeMassRings[jj] = g->MetalsBulgeMassRings[jj];
-		#endif // RINGS_IN_BULGES
+#endif // RINGS_IN_BULGES
 	}
-	#endif // OUTPUT_RINGS
-	
-	
+#endif // OUTPUT_RINGS
+
+
 	//STAR FORMATION HISTORIES / RATES
-	
-	#ifdef OUTPUT_SFH
+
+#ifdef OUTPUT_SFH
 	o->sfh_ibin = g->sfh_ibin;
 	for ( j = 0; j <= o->sfh_ibin; j ++ ) {
-	#ifndef NORMALIZEDDB
+#ifndef NORMALIZEDDB
 		// ROB: Lookback time to middle of SFH bin, in years. Now use LookBackTimeToSnap + sfh_time instead.
 		//o->sfh_time[j]=(g->sfh_t[j]+g->sfh_dt[j]/2.)*UnitTime_in_years/Hubble_h;
 		//Time from middle of this sfh bin to snapshot - converted from code units to years
@@ -446,50 +445,50 @@ void prepare_galaxy_for_output( int n, struct GALAXY *g, struct GALAXY_OUTPUT *o
 		//o->sfh_dt[j]=g->sfh_dt[j]*UnitTime_in_years/Hubble_h;
 		o->sfh_DiskMass[j]  = g->sfh_DiskMass[j];
 		o->sfh_BulgeMass[j] = g->sfh_BulgeMass[j];
-		#ifdef OUTPUT_RINGS
+#ifdef OUTPUT_RINGS
 		for(jj=0; jj<RNUM; jj++)
 		  {
 			o->sfh_DiskMassRings[jj][j]=g->sfh_DiskMassRings[jj][j];
-			#ifdef RINGS_IN_BULGES
+#ifdef RINGS_IN_BULGES
 			o->sfh_BulgeMassRings[jj][j]=g->sfh_BulgeMassRings[jj][j];
-			#endif // RINGS_IN_BULGES
+#endif // RINGS_IN_BULGES
 		  }
-		  #endif // OUTPUT_RINGS
+#endif // OUTPUT_RINGS
 		o->sfh_ICM[j]             = g->sfh_ICM[j];
 		o->sfh_MetalsDiskMass[j]  = g->sfh_MetalsDiskMass[j];
 		o->sfh_MetalsBulgeMass[j] = g->sfh_MetalsBulgeMass[j];
 		o->sfh_MetalsICM[j]       = g->sfh_MetalsICM[j];
 		//#ifdef DETAILED_METALS_AND_MASS_RETURN
-		#ifdef OUTPUT_ELEMENTS
+#ifdef OUTPUT_ELEMENTS
 		for(kk=0;kk<NUM_ELEMENTS;kk++)
 		  {
 			o->sfh_DiskMass_elements[j][kk]=g->sfh_DiskMass_elements[j][kk];
 			o->sfh_BulgeMass_elements[j][kk]=g->sfh_BulgeMass_elements[j][kk];
 			o->sfh_ICM_elements[j][kk]=g->sfh_ICM_elements[j][kk];
 		  }
-		  #endif // OUTPUT_ELEMENTS
+#endif // OUTPUT_ELEMENTS
 		//#endif // DETAILED_METALS_AND_MASS_RETURN
-		#ifdef TRACK_SFH_MASSGROWTH_CHANNELS
+#ifdef TRACK_SFH_MASSGROWTH_CHANNELS
 		o->sfh_MassFromInSitu[j]=g->sfh_MassFromInSitu[j];
 		o->sfh_MassFromMergers[j]=g->sfh_MassFromMergers[j];
 		o->sfh_MassFromBursts[j]=g->sfh_MassFromBursts[j];
-		#endif // TRACK_SFH_MASSGROWTH_CHANNELS
-		
-		#ifdef TRACK_BURST
+#endif // TRACK_SFH_MASSGROWTH_CHANNELS
+
+#ifdef TRACK_BURST
 		o->sfh_BurstMass[j]=g->sfh_BurstMass[j];
-		#endif // TRACK_BURST
-		#else // NORMALIZEDDB
+#endif // TRACK_BURST
+#else // NORMALIZEDDB
 		sfh_bin[j].sfh_DiskMass  = g->sfh_DiskMass[j];
 		sfh_bin[j].sfh_BulgeMass = g->sfh_BulgeMass[j];
-		#ifdef OUTPUT_RINGS
+#ifdef OUTPUT_RINGS
 		for(jj=0; jj<RNUM; jj++)
 		  {
 			sfh_bin[j].sfh_DiskMassRings[jj] = g->sfh_DiskMassRings[jj][j];
-			#ifdef RINGS_IN_BULGES
+#ifdef RINGS_IN_BULGES
 			sfh_bin[j].sfh_BulgeMassRings[jj] = g->sfh_BulgeMassRings[jj][j];
-			#endif // RINGS_IN_BULGES
+#endif // RINGS_IN_BULGES
 		  }
-		  #endif // OUTPUT_RINGS
+#endif // OUTPUT_RINGS
 		sfh_bin[j].sfh_ICM             = g->sfh_ICM[j];
 		sfh_bin[j].sfh_MetalsDiskMass  = g->sfh_MetalsDiskMass[j];
 		sfh_bin[j].sfh_MetalsBulgeMass = g->sfh_MetalsBulgeMass[j];
@@ -498,72 +497,72 @@ void prepare_galaxy_for_output( int n, struct GALAXY *g, struct GALAXY_OUTPUT *o
 		sfh_bin[j].snapnum             = g->SnapNum;
 		sfh_bin[j].GalID               = g->GalTreeIndex; // TODO must be reset
 		o->GalID                       = g->GalTreeIndex;
-		#endif // NORMALIZEDDB
+#endif // NORMALIZEDDB
 	}
-	
+
 	//Set all non-used array elements to zero: important if we want to read files in database that all values are valid
 	// SQLServer floats
 	for ( j = o->sfh_ibin + 1;
 		  j < SFH_NBIN;
 		  j ++ ) {
-		  #ifndef NORMALIZEDDB
+#ifndef NORMALIZEDDB
 		//o->sfh_time[j]=0.;
 		//o->sfh_dt[j]=0.;
 		o->sfh_DiskMass[j]  = 0.;
 		o->sfh_BulgeMass[j] = 0.;
-		#ifdef OUTPUT_RINGS
+#ifdef OUTPUT_RINGS
 		for(jj=0; jj<RNUM; jj++)
 		  {
 			o->sfh_DiskMassRings[jj][j]=0.;
-			#ifdef RINGS_IN_BULGES
+#ifdef RINGS_IN_BULGES
 			o->sfh_BulgeMassRings[jj][j]=0.;
-			#endif // RINGS_IN_BULGES
+#endif // RINGS_IN_BULGES
 		  }
-		  #endif // OUTPUT_RINGS
+#endif // OUTPUT_RINGS
 		o->sfh_ICM[j]            = 0.;
 		o->sfh_MetalsDiskMass[j] = metals_init();
-		
+
 		o->sfh_MetalsBulgeMass[j] = metals_init();
-		
+
 		o->sfh_MetalsICM[j] = metals_init();
-		
-		#ifdef OUTPUT_ELEMENTS
+
+#ifdef OUTPUT_ELEMENTS
 		for(kk=0;kk<NUM_ELEMENTS;kk++)
 		  {
 			o->sfh_DiskMass_elements[j][kk]=0.;
 			o->sfh_BulgeMass_elements[j][kk]=0.;
 			o->sfh_ICM_elements[j][kk]=0.;
 		  }
-		  #endif // OUTPUT_ELEMENTS
-		  #ifdef TRACK_SFH_MASSGROWTH_CHANNELS
+#endif // OUTPUT_ELEMENTS
+#ifdef TRACK_SFH_MASSGROWTH_CHANNELS
 		o->sfh_MassFromInSitu[j]=0.;
 		o->sfh_MassFromMergers[j]=0.;
 		o->sfh_MassFromBursts[j]=0.;
-		#endif // TRACK_SFH_MASSGROWTH_CHANNELS
-		#ifdef TRACK_BURST
+#endif // TRACK_SFH_MASSGROWTH_CHANNELS
+#ifdef TRACK_BURST
 		o->sfh_BurstMass[j]=0.;
-		#endif // TRACK_BURST
-		#else // NORMALIZEDDB
+#endif // TRACK_BURST
+#else // NORMALIZEDDB
 		sfh_bin[j].sfh_DiskMass=0;
 		sfh_bin[j].sfh_BulgeMass=0;
-		#ifdef OUTPUT_RINGS
+#ifdef OUTPUT_RINGS
 		for(jj=0; jj<RNUM; jj++)
 		  {
 			sfh_bin[j].sfh_DiskMassRings[jj]=0.;
-			#ifdef RINGS_IN_BULGES
+#ifdef RINGS_IN_BULGES
 			sfh_bin[j].sfh_BulgeMassRings[jj]=0.;
-			#endif // RINGS_IN_BULGES
+#endif // RINGS_IN_BULGES
 		  }
-		  #endif // OUTPUT_RINGS
+#endif // OUTPUT_RINGS
 		sfh_bin[j].sfh_ICM=0;
 		sfh_bin[j].sfh_ibin = 0;
 		sfh_bin[j].snapnum = g->SnapNum;
 		// TODO other elements not important, are not being written anyway. Or are they used elsewhere?
-		#endif // NORMALIZEDDB
+#endif // NORMALIZEDDB
 	}
-	#endif //OUTPUT_SFH
-	
-	#ifdef OUTPUT_ELEMENTS
+#endif //OUTPUT_SFH
+
+#ifdef OUTPUT_ELEMENTS
 	for(kk=0;kk<NUM_ELEMENTS;kk++)
 	  {
 		o->DiskMass_elements[kk] = g->DiskMass_elements[kk];
@@ -572,19 +571,19 @@ void prepare_galaxy_for_output( int n, struct GALAXY *g, struct GALAXY_OUTPUT *o
 		o->HotGas_elements[kk] = g->HotGas_elements[kk];
 		o->EjectedMass_elements[kk] = g->EjectedMass_elements[kk];
 		o->ICM_elements[kk] = g->ICM_elements[kk];
-		#ifdef OUTPUT_RINGS
+#ifdef OUTPUT_RINGS
 		for(jj=0; jj<RNUM; jj++)
 	  {
 		o->DiskMassRings_elements[jj][kk] = g -> DiskMassRings_elements[jj][kk];
-		#ifdef RINGS_IN_BULGES
+#ifdef RINGS_IN_BULGES
 		o->BulgeMassRings_elements[jj][kk] = g -> BulgeMassRings_elements[jj][kk];
-		#endif // RINGS_IN_BULGES
+#endif // RINGS_IN_BULGES
 		o->ColdGasRings_elements[jj][kk] = g->ColdGasRings_elements[jj][kk];
 	  }
-	  #endif // OUTPUT_RINGS
+#endif // OUTPUT_RINGS
 	  }
-	#endif //OUTPUT_ELEMENTS
-	
+#endif //OUTPUT_ELEMENTS
+
 	o->PrimordialAccretionRate = CORRECTDBFLOAT(
 			                             g->PrimordialAccretionRate * UnitMass_in_g / UnitTime_in_s * SEC_PER_YEAR /
 			                             SOLAR_MASS);
@@ -593,25 +592,25 @@ void prepare_galaxy_for_output( int n, struct GALAXY *g, struct GALAXY_OUTPUT *o
 	o->CoolingRate_beforeAGN   = CORRECTDBFLOAT(
 			                             g->CoolingRate_beforeAGN * UnitMass_in_g / UnitTime_in_s * SEC_PER_YEAR /
 			                             SOLAR_MASS);
-	
+
 	//o->MajorMergerRate = CORRECTDBFLOAT(g->MajorMergerRate / UnitTime_in_s * SEC_PER_YEAR);
 	//o->MinorMergerRate = CORRECTDBFLOAT(g->MinorMergerRate / UnitTime_in_s * SEC_PER_YEAR);
 	o->NMajorMergers = g->NMajorMergers;
 	o->NMinorMergers = g->NMinorMergers;
-	
+
 	//NOTE: in Msun/yr
 	o->Sfr      = CORRECTDBFLOAT(g->Sfr * UnitMass_in_g / UnitTime_in_s * SEC_PER_YEAR / SOLAR_MASS);
 	o->SfrBulge = CORRECTDBFLOAT(g->SfrBulge * UnitMass_in_g / UnitTime_in_s * SEC_PER_YEAR / SOLAR_MASS);
-	#ifdef OUTPUT_RINGS
+#ifdef OUTPUT_RINGS
 	for(jj=0; jj<RNUM; jj++)
 	  o->SfrRings[jj] = g->SfrRings[jj] * UnitMass_in_g / UnitTime_in_s * SEC_PER_YEAR / SOLAR_MASS;
-	#endif // OUTPUT_RINGS
-	#endif //NO_PROPS_OUTPUTS
-	
-	
+#endif // OUTPUT_RINGS
+#endif //NO_PROPS_OUTPUTS
+
+
 	//MAGNITUDES
-	#ifdef COMPUTE_SPECPHOT_PROPERTIES
-	#ifdef POST_PROCESS_MAGS
+#ifdef COMPUTE_SPECPHOT_PROPERTIES
+#ifdef POST_PROCESS_MAGS
 	
 	/*   int N_vespa_files=29, N_vespa_AgeBins=16;
 		 double vespa_age[17]={0.000125893, 0.02000, 0.03000, 0.04800, 0.07400, 0.11500,
@@ -689,71 +688,70 @@ void prepare_galaxy_for_output( int n, struct GALAXY *g, struct GALAXY_OUTPUT *o
 		 }
 	*/
 		// Convert recorded star formation histories into mags
-		#ifdef NORMALIZEDDB
+#ifdef NORMALIZEDDB
 	  post_process_spec_mags(o, &(sfh_bin[0]));
-	  #else // NORMALIZEDDB
+#else // NORMALIZEDDB
 	  post_process_spec_mags(o);
-	  #endif // NORMALIZEDDB
-	  #else // POST_PROCESS_MAGS
-	
-	  #ifdef OUTPUT_REST_MAGS
+#endif // NORMALIZEDDB
+#else // POST_PROCESS_MAGS
+
+#ifdef OUTPUT_REST_MAGS
 	// Luminosities are converted into Mags in various bands
 	for(j = 0; j < NMAG; j++)
 	  {
 		//o->Mag[j] = lum_to_mag(g->Lum[j][n]); -> DONE ON TOP FOR LIGHT_OUTPUT AS WELL
 		o->MagBulge[j] = lum_to_mag(g->LumBulge[j][n]);
 		o->MagDust[j] = lum_to_mag(g->LumDust[j][n]);
-		#ifdef ICL
+#ifdef ICL
 		o->MagICL[j] = lum_to_mag(g->ICLLum[j][n]);
-		#endif // ICL
+#endif // ICL
 	  }
-	
-	
-	  #endif //OUTPUT_REST_MAGS
-	  #ifdef OUTPUT_OBS_MAGS
-	  #ifdef COMPUTE_OBS_MAGS
+
+
+#endif //OUTPUT_REST_MAGS
+#ifdef OUTPUT_OBS_MAGS
+#ifdef COMPUTE_OBS_MAGS
 	// Luminosities in various bands
 	for(j = 0; j < NMAG; j++)
 	  {
 		o->ObsMag[j] = lum_to_mag(g->ObsLum[j][n]);
 		o->ObsMagBulge[j] = lum_to_mag(g->ObsLumBulge[j][n]);
 		o->ObsMagDust[j] = lum_to_mag(g->ObsLumDust[j][n]);
-		#ifdef ICL
+#ifdef ICL
 		o->ObsMagICL[j] = lum_to_mag(g->ObsICL[j][n]);
-		#endif // ICL
-	
-		#ifdef OUTPUT_MOMAF_INPUTS
+#endif // ICL
+
+#ifdef OUTPUT_MOMAF_INPUTS
 		o->dObsMag[j] = lum_to_mag(g->dObsLum[j][n]);
 		o->dObsMagBulge[j] = lum_to_mag(g->dObsLumBulge[j][n]);
 		o->dObsMagDust[j] = lum_to_mag(g->dObsLumDust[j][n]);
-		#ifdef ICL
+#ifdef ICL
 		o->dObsMagICL[j] = lum_to_mag(g->dObsICL[j][n]);
-		#endif // ICL
-		#endif // OUTPUT_MOMAF_INPUTS
+#endif // ICL
+#endif // OUTPUT_MOMAF_INPUTS
 	  }
-	  #endif // COMPUTE_OBS_MAGS
-	  #endif // OUTPUT_OBS_MAGS
-	  #endif // POST_PROCESS_MAGS
-	#endif // COMPUTE_SPECPHOT_PROPERTIES
-	
-	#ifndef NO_PROPS_OUTPUTS
-	if ((g->DiskMass + g->BulgeMass) > 0.0 ) {
+#endif // COMPUTE_OBS_MAGS
+#endif // OUTPUT_OBS_MAGS
+#endif // POST_PROCESS_MAGS
+#endif // COMPUTE_SPECPHOT_PROPERTIES
+
+#ifndef NO_PROPS_OUTPUTS
+	if ((g->DiskMass + g->BulgeMass) > 0.0) {
 		o->MassWeightAge            = g->MassWeightAge[n] / (g->DiskMass + g->BulgeMass);
 		o->MassWeightAge            = o->MassWeightAge / 1000. * UnitTime_in_Megayears / Hubble_h; // Age in Gyr
-		o->StellarHalfLightRadius   = stellar_half_light_radius(o);
-		o->StellarNinetyLightRadius = stellar_ninety_light_radius(o);
-	}
-	else {
+		o->StellarHalfLightRadius   = stellar_half_light_radius (o);
+		o->StellarNinetyLightRadius = stellar_ninety_light_radius (o);
+	} else {
 		o->MassWeightAge            = 0.;
 		o->StellarHalfLightRadius   = 0.;
 		o->StellarNinetyLightRadius = 0.;
 	}
-	#endif // NO_PROPS_OUTPUTS
-	
-	#ifdef FIX_OUTPUT_UNITS
+#endif // NO_PROPS_OUTPUTS
+
+#ifdef FIX_OUTPUT_UNITS
 	fix_units_for_ouput(o);
-	#endif // FIX_OUTPUT_UNITS
-	#endif // LIGHT_OUTPUT
+#endif // FIX_OUTPUT_UNITS
+#endif // LIGHT_OUTPUT
 }
 // end prepare_galaxy_for_output
 
@@ -814,7 +812,7 @@ void fix_units_for_ouput(struct GALAXY_OUTPUT *o)
   o->Mvir /= Hubble_h;
   o->Rvir /= Hubble_h;
   
-  #ifdef HALOPROPERTIES
+#ifdef HALOPROPERTIES
   o->HaloM_Mean200 /= Hubble_h;
   o->HaloM_Crit200 /= Hubble_h;
   o->HaloM_TopHat /= Hubble_h;
@@ -824,8 +822,8 @@ void fix_units_for_ouput(struct GALAXY_OUTPUT *o)
   o->HaloSpin[0] /= Hubble_h;
   o->HaloSpin[1] /= Hubble_h;
   o->HaloSpin[2] /= Hubble_h;
-  #endif // HALOPROPERTIES
-  
+#endif // HALOPROPERTIES
+
   o->ColdGasSpin[0] /= Hubble_h;
   o->ColdGasSpin[1] /= Hubble_h;
   o->ColdGasSpin[2] /= Hubble_h;
@@ -851,16 +849,16 @@ void fix_units_for_ouput(struct GALAXY_OUTPUT *o)
   o->DiskRadius /= Hubble_h;
   o->ColdGasRadius /= Hubble_h;
   o->CoolingRadius /= sqrt(Hubble_h);
-  
-  #ifdef TRACK_MASSGROWTH_CHANNELS
+
+#ifdef TRACK_MASSGROWTH_CHANNELS
   o->MassFromInSitu/= Hubble_h;
   o->MassFromMergers/= Hubble_h;
   o->MassFromBursts/= Hubble_h;
-  #endif // TRACK_MASSGROWTH_CHANNELS
-  
-  #ifdef TRACK_BURST
+#endif // TRACK_MASSGROWTH_CHANNELS
+
+#ifdef TRACK_BURST
   o->BurstMass /= Hubble_h;
-  #endif // TRACK_BURST
+#endif // TRACK_BURST
 
   o->MetalsColdGas=metals_add(metals_init(),o->MetalsColdGas,1./Hubble_h);
   o->MetalsDiskMass=metals_add(metals_init(),o->MetalsDiskMass,1./Hubble_h);
@@ -869,24 +867,24 @@ void fix_units_for_ouput(struct GALAXY_OUTPUT *o)
   o->MetalsEjectedMass=metals_add(metals_init(),o->MetalsEjectedMass,1./Hubble_h);
   o->MetalsICM=metals_add(metals_init(),o->MetalsICM,1./Hubble_h);
 
-  #ifdef OUTPUT_SFH
+#ifdef OUTPUT_SFH
   for(j=0;j<=o->sfh_ibin;j++) {
 	o->sfh_DiskMass[j] /= Hubble_h;
 	o->sfh_BulgeMass[j] /= Hubble_h;
 	o->sfh_ICM[j] /= Hubble_h;
-	#ifdef TRACK_SFH_MASSGROWTH_CHANNELS
+#ifdef TRACK_SFH_MASSGROWTH_CHANNELS
 	o->sfh_MassFromInSitu[j]/= Hubble_h;
 	o->sfh_MassFromMergers[j]/= Hubble_h;
 	o->sfh_MassFromBursts[j]/= Hubble_h;
-	#endif // TRACK_SFH_MASSGROWTH_CHANNELS
-	#ifdef TRACK_BURST
+#endif // TRACK_SFH_MASSGROWTH_CHANNELS
+#ifdef TRACK_BURST
 	o->sfh_BurstMass[j] /= Hubble_h;
-	#endif // TRACK_BURST
+#endif // TRACK_BURST
 	o->sfh_MetalsDiskMass[j]=metals_add(metals_init(),o->sfh_MetalsDiskMass[j],1./Hubble_h);
 	o->sfh_MetalsBulgeMass[j]=metals_add(metals_init(),o->sfh_MetalsBulgeMass[j],1./Hubble_h);
 	o->sfh_MetalsICM[j]=metals_add(metals_init(),o->sfh_MetalsICM[j],1./Hubble_h);
   }
-  #endif //OUTPUT_SFH
+#endif //OUTPUT_SFH
 }
 #endif // LIGHT_OUTPUT
 #endif // NO_PROPS_OUTPUTS
@@ -912,14 +910,14 @@ void fix_units_for_ouput(struct GALAXY_OUTPUT *o)
 
 
 /** @brief																											  */
-long long calc_big_db_offset( int filenr, int treenr ) {
+long long calc_big_db_offset (int filenr, int treenr) {
 	long long big;
-	#ifdef MRII
+#ifdef MRII
 	// TODO assumes < 10^9 galaxies per tree, is that always correct?
 	big = (((filenr * (long long) 1000000) + treenr) * (long long) 1000000000);
-	#else // MRII
+#else // MRII
 	big = (((filenr * (long long) 1000000) + treenr) * (long long) 1000000);
-	#endif // MRII
+#endif // MRII
 	return big;
 }
 // end calc_big_db_offset
@@ -943,13 +941,13 @@ long long calc_big_db_offset( int filenr, int treenr ) {
 
 
 /** @brief																											  */
-long long calc_big_db_subid_index( int snapnum, int filenr, int subhaloindex ) {
+long long calc_big_db_subid_index (int snapnum, int filenr, int subhaloindex) {
 	long long big;
-	#ifdef MRII
+#ifdef MRII
 	big = snapnum * (long long) 10000000000000 + filenr * (long long) 1000000000 + subhaloindex;
-	#else // MRII
+#else // MRII
 	big = snapnum * (long long) 1000000000000 + filenr * (long long) 100000000 + subhaloindex;
-	#endif // MRII
+#endif // MRII
 	return big;
 }
 // end calc_big_db_subid_index

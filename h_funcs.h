@@ -1,7 +1,7 @@
 
-#define  min(x,y)  ((x)<(y) ?(x):(y))
-#define  max(x,y)  ((x)>(y) ?(x):(y))
-#define  wrap(x,y) ( (x)>((y)/2.) ? ((x)-(y)) : ((x)<(-(y)/2.)?((x)+(y)):(x)) )
+#define  min(x, y)  ((x)<(y) ?(x):(y))
+#define  max(x, y)  ((x)>(y) ?(x):(y))
+#define  wrap(x, y) ( (x)>((y)/2.) ? ((x)-(y)) : ((x)<(-(y)/2.)?((x)+(y)):(x)) )
 #define  pow2(x)   ((x)*(x))
 #define  pow3(x)   ((x)*(x)*(x))
 #define  terminate(x) {char termbuf[5000]; sprintf(termbuf, "code termination on task=%d, function %s(), file %s, line %d: %s\n", ThisTask, __FUNCTION__, __FILE__, __LINE__, x); printf("%s", termbuf); fflush(stdout); endrun(1);}

@@ -31,55 +31,58 @@
  **/
 /** @brief reincorporates ejected gas back into the central galaxy hot halo */
 
-void reincorporate_gas( int p, double dt ) {
+void reincorporate_gas (int p, double dt) {
 	double reincorporated, reinc_time;
-	
+
 	reincorporated = 0.;
-	
-	mass_checks(p, "model_reincorporation.c", __LINE__);
+
+	mass_checks (p, "model_reincorporation.c", __LINE__);
 	/* Henriques2012b Mdot_eject=-gama_ej*M_ejected*M_vir
 	 * Mvir should be in units of 1e12, but inside the
 	 * code Mvir is already in units of 1.e10*/
-	
-	if ( ReIncorporationModel == 0 ) {
+
+	if (ReIncorporationModel == 0) {
 		// Oppenheimer & Dave 2008
 		/* reinc_time= pow(Gal[p].Mvir/Hubble_h,-0.6)*ReIncorporationFactor/UnitTime_in_years;
 		 * if(Gal[p].Mvir/Hubble_h > 500.)
 		 * reinc_time= pow(500.,-0.6)*ReIncorporationFactor/UnitTime_in_years;
 		 * reincorporated = Gal[p].EjectedMass / reinc_time * dt; */
-		#ifdef HENRIQUES15
+#ifdef HENRIQUES15
 		reinc_time= (Hubble_h/Gal[p].Mvir)*(ReIncorporationFactor/UnitTime_in_years);
-		#else
+#else
 		// code units for time are UnitTime_in_s/Hubble_h
 		reinc_time = (Hubble_h / Gal[p].Mvir) * (ReIncorporationFactor / UnitTime_in_years * Hubble_h);
-		#endif
+#endif
 		reincorporated = Gal[p].EjectedMass / reinc_time * dt;
 	}
 		/* Guo2010 -> Mdot_eject=-gama_ej * M_ejected/tdyn * Vvir/220 */
-	else if ( ReIncorporationModel == 1 )
+	else if (ReIncorporationModel == 1) {
 		reincorporated =
 				ReIncorporationFactor * Gal[p].EjectedMass / (Gal[p].Rvir / Gal[p].Vvir) * Gal[p].Vvir / 220. * dt;
-		
+
 		/* DeLucia2007 -> Mdot_eject=-gama_ej * M_ejected/tdyn */
-	else if ( ReIncorporationModel == 2 )
+	} else if (ReIncorporationModel == 2) {
 		reincorporated = ReIncorporationFactor * Gal[p].EjectedMass / (Gal[p].Rvir / Gal[p].Vvir) * dt;
-	
-	if ( FeedbackEjectionModel == 1 ) {
+	}
+
+	if (FeedbackEjectionModel == 1) {
 		reincorporated = ReIncorporationFactor * Gal[p].EjectedMass /
-		                 (Gal[p].Rvir * min(FeedbackEjectionEfficiency, 1.) * sqrt(EtaSNcode * EnergySNcode) /
+		                 (Gal[p].Rvir * min(FeedbackEjectionEfficiency, 1.) * sqrt (EtaSNcode * EnergySNcode) /
 		                  (Gal[p].Vvir * Gal[p].Vvir))
 		                 * Gal[p].Vvir / 220. * 1.e-6 * dt;
 	}
-	
-	if ( reincorporated > Gal[p].EjectedMass )
+
+	if (reincorporated > Gal[p].EjectedMass) {
 		reincorporated = Gal[p].EjectedMass;
-	
-	mass_checks(p, "model_reincorporation.c", __LINE__);
-	
+	}
+
+	mass_checks (p, "model_reincorporation.c", __LINE__);
+
 	/*Update ejected and hot gas contents*/
-	if ( Gal[p].EjectedMass > 0. )
-		transfer_material(p, "HotGas", p, "EjectedMass",
-		                  ((float) reincorporated / Gal[p].EjectedMass), "model_reincorporation.c", __LINE__);
-	
-	mass_checks(p, "model_reincorporation.c", __LINE__);
+	if (Gal[p].EjectedMass > 0.) {
+		transfer_material (p, "HotGas", p, "EjectedMass",
+		                   ((float) reincorporated / Gal[p].EjectedMass), "model_reincorporation.c", __LINE__);
+	}
+
+	mass_checks (p, "model_reincorporation.c", __LINE__);
 }

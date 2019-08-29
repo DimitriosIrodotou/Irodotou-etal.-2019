@@ -51,43 +51,41 @@
 /** @brief Main recipe, calculates the fraction of cold gas turned into stars due to star formation; the fraction of
  * mass instantaneously recycled and returned to the cold gas; the fraction of gas reheated from cold to hot, ejected
  * from hot to external and returned from ejected to hot due to SN feedback.  										  */
-void starformation( int p, int centralgal, double time, double dt, int nstep ) {
+void starformation (int p, int centralgal, double time, double dt, int nstep) {
 	double tdyn, strdot = 0., stars, cold_crit;
-	
-	#ifdef H2_AND_RINGS
+
+#ifdef H2_AND_RINGS
 	double strdotr[RNUM], starsRings[RNUM], sfe, cold_crit_rate, SigmaGas, SigmaGasratio;
 	int j;
-	#endif
-	
-	#ifdef COMPUTE_SPECPHOT_PROPERTIES
-	#ifndef POST_PROCESS_MAGS
+#endif
+
+#ifdef COMPUTE_SPECPHOT_PROPERTIES
+#ifndef POST_PROCESS_MAGS
 	double metallicitySF;
-	#endif
-	#endif
-	
+#endif
+#endif
+
 	double Vmax, gas_radius;
-	
-	if ( Gal[p].Type == 0 ) {
+
+	if (Gal[p].Type == 0) {
 		Vmax = Gal[p].Vmax;
-	}
-	else {
+	} else {
 		Vmax = Gal[p].InfallVmax;
 	}
 	gas_radius          = Gal[p].ColdGasRadius;
 	tdyn                = gas_radius / Vmax;
 	cold_crit           = SfrColdCrit * Vmax / 200. * gas_radius * 100.;
-	
+
 	// Standard star formation law (Croton2006, Delucia2007, Guo2010, Henriques2015)
-	if ( StarFormationModel == 0 ) {
-		if ( Gal[p].ColdGas > cold_crit ) {
+	if (StarFormationModel == 0) {
+		if (Gal[p].ColdGas > cold_crit) {
 			strdot = SfrEfficiency * (Gal[p].ColdGas - cold_crit) / tdyn;
-		}
-		else {
+		} else {
 			strdot = 0.0;
 		}
 	}
-	
-	#ifdef H2_AND_RINGS
+
+#ifdef H2_AND_RINGS
 	update_h2fraction(p);
 	
 	sfe     = SfrEfficiency * UnitTime_in_years / Hubble_h; // convert from yr-1 into code units of time
@@ -160,11 +158,11 @@ void starformation( int p, int centralgal, double time, double dt, int nstep ) {
 	for ( j = 0, strdot = 0; j < RNUM; j ++ ) {
 		strdot += strdotr[j];
 	}
-	#endif // H2_AND_RINGS
-	
+#endif // H2_AND_RINGS
+
 	stars = strdot * dt; // units of dynamical time are Mpc/Km/s - no conversion on dt needed 3.06e19 to 3.15e19
-	
-	#ifdef H2_AND_RINGS
+
+#ifdef H2_AND_RINGS
 	for ( j = 0; j < RNUM; j++ ) {
 		if ( strdotr[j] < 0.0 ) {
 			strdotr[j]    = 0.;
@@ -174,107 +172,107 @@ void starformation( int p, int centralgal, double time, double dt, int nstep ) {
 			starsRings[j] = 0.0;
 		}
 	}
-	#endif // H2_AND_RINGS
-	
+#endif // H2_AND_RINGS
+
 	// Otherwise this check is done inside update_stars_due_to_reheat for stars + reheated mass !> cold gas.
-	#ifdef FEEDBACK_COUPLED_WITH_MASS_RETURN
+#ifdef FEEDBACK_COUPLED_WITH_MASS_RETURN
 	if ( stars > Gal[p].ColdGas ) {
 		stars = Gal[p].ColdGas;
 	}
-	#ifdef H2_AND_RINGS
+#ifdef H2_AND_RINGS
 	for ( j = 0; j < RNUM; j++ ) {
 		if ( starsRings[j] > Gal[p].ColdGasRings[j] ) {
 			starsRings[j] = Gal[p].ColdGasRings[j];
 		}
 	}
-	#endif // H2_AND_RINGS
-	#endif // FEEDBACK_COUPLED_WITH_MASS_RETURN
-	
-	mass_checks(p, "model_starformation_and_feedback.c", __LINE__);
-	mass_checks(centralgal, "model_starformation_and_feedback.c", __LINE__);
-	
+#endif // H2_AND_RINGS
+#endif // FEEDBACK_COUPLED_WITH_MASS_RETURN
+
+	mass_checks (p, "model_starformation_and_feedback.c", __LINE__);
+	mass_checks (centralgal, "model_starformation_and_feedback.c", __LINE__);
+
 	// Store the value of the metallicity of the cold phase when SF occurs.
-	#ifdef COMPUTE_SPECPHOT_PROPERTIES
-	#ifndef POST_PROCESS_MAGS
+#ifdef COMPUTE_SPECPHOT_PROPERTIES
+#ifndef POST_PROCESS_MAGS
 	if ( Gal[p].ColdGas > 0. ) {
 		metallicitySF = metals_total(Gal[p].MetalsColdGas) / Gal[p].ColdGas;
 	}
 	else {
 		metallicitySF = 0.;
 	}
-	#endif // POST_PROCESS_MAGS
-	#endif // COMPUTE_SPECPHOT_PROPERTIES
-	
+#endif // POST_PROCESS_MAGS
+#endif // COMPUTE_SPECPHOT_PROPERTIES
+
 	//if FEEDBACK_COUPLED_WITH_MASS_RETURN feedback happens only when stars die, there is no need to balance it with SF
-	#ifndef FEEDBACK_COUPLED_WITH_MASS_RETURN
-	if ( stars > 0. ) {
-		#ifndef H2_AND_RINGS
-		update_stars_due_to_reheat(p, centralgal, &stars);
-		#else // H2_AND_RINGS
+#ifndef FEEDBACK_COUPLED_WITH_MASS_RETURN
+	if (stars > 0.) {
+#ifndef H2_AND_RINGS
+		update_stars_due_to_reheat (p, centralgal, &stars);
+#else // H2_AND_RINGS
 		update_stars_due_to_reheat(p, centralgal, &stars, starsRings);
-		#endif // H2_AND_RINGS
+#endif // H2_AND_RINGS
 	}
-	#endif //FEEDBACK_COUPLED_WITH_MASS_RETURN
-	
-	mass_checks(p, "model_starformation_and_feedback.c", __LINE__);
-	mass_checks(centralgal, "model_starformation_and_feedback.c", __LINE__);
-	
+#endif //FEEDBACK_COUPLED_WITH_MASS_RETURN
+
+	mass_checks (p, "model_starformation_and_feedback.c", __LINE__);
+	mass_checks (centralgal, "model_starformation_and_feedback.c", __LINE__);
+
 	// Update the star formation rate.
 	Gal[p].Sfr += stars / (dt * STEPS);
-	
-	#ifdef H2_AND_RINGS
+
+#ifdef H2_AND_RINGS
 	for(j=0;j<RNUM;j++)
 	{
 	  Gal[p].SfrRings[j] += starsRings[j] / (dt * STEPS);
 	}
-	#endif // H2_AND_RINGS
-	
+#endif // H2_AND_RINGS
+
 	// update_from_star_formation can only be called after SD_feeedback recipe since stars need to be re_set once the
 	// reheated mass is known (star formation and feedback share the same fraction of cold gas).
-	if ( stars > 0.0 ) {
-		#ifndef H2_AND_RINGS
-		update_from_star_formation(p, stars, "insitu", nstep); // false indicates not a burst
-		#else // H2_AND_RINGS
+	if (stars > 0.0) {
+#ifndef H2_AND_RINGS
+		update_from_star_formation (p, stars, "insitu", nstep); // false indicates not a burst
+#else // H2_AND_RINGS
 		update_from_star_formation(p, stars, starsRings, "insitu", nstep); // false indicates not a burst
-		#endif // H2_AND_RINGS
+#endif // H2_AND_RINGS
 	}
-	
-	update_massweightage(p, stars, time);
-	
-	#ifndef FEEDBACK_COUPLED_WITH_MASS_RETURN
-	if ( stars > 0.0 ) {
-		#ifndef H2_AND_RINGS
-		SN_feedback(p, centralgal, stars, "ColdGas");
-		#else // H2_AND_RINGS
+
+	update_massweightage (p, stars, time);
+
+#ifndef FEEDBACK_COUPLED_WITH_MASS_RETURN
+	if (stars > 0.0) {
+#ifndef H2_AND_RINGS
+		SN_feedback (p, centralgal, stars, "ColdGas");
+#else // H2_AND_RINGS
 		SN_feedback(p, centralgal, stars, starsRings, "ColdGas");
-		#endif // H2_AND_RINGS
+#endif // H2_AND_RINGS
 	}
-	#endif // FEEDBACK_COUPLED_WITH_MASS_RETURN
-	
-	mass_checks(p, "model_starformation_and_feedback.c", __LINE__);
-	mass_checks(centralgal, "model_starformation_and_feedback.c", __LINE__);
-	
-	#ifdef COMPUTE_SPECPHOT_PROPERTIES
-	#ifndef POST_PROCESS_MAGS
+#endif // FEEDBACK_COUPLED_WITH_MASS_RETURN
+
+	mass_checks (p, "model_starformation_and_feedback.c", __LINE__);
+	mass_checks (centralgal, "model_starformation_and_feedback.c", __LINE__);
+
+#ifdef COMPUTE_SPECPHOT_PROPERTIES
+#ifndef POST_PROCESS_MAGS
 	
 	//  Update the luminosities due to the stars formed
 	if ( stars > 0.0 ) {
 		add_to_luminosities(p, stars, time, dt, metallicitySF);
 	}
-	#endif // POST_PROCESS_MAGS
-	#endif // COMPUTE_SPECPHOT_PROPERTIES
-	
-	mass_checks(p, "model_starformation_and_feedback.c", __LINE__);
-	mass_checks(centralgal, "model_starformation_and_feedback.c", __LINE__);
-	
-	if ( DiskInstabilityModel == 0 ) {
-		if ( Gal[p].DiskMass > 0.0 ) {
-			check_disk_instability(p, dt, time);
+#endif // POST_PROCESS_MAGS
+#endif // COMPUTE_SPECPHOT_PROPERTIES
+
+	mass_checks (p, "model_starformation_and_feedback.c", __LINE__);
+	mass_checks (centralgal, "model_starformation_and_feedback.c", __LINE__);
+
+	if (DiskInstabilityModel == 0) {
+		if (Gal[p].DiskMass > 0.0) {
+			check_disk_instability (p, dt, time);
 		}
 	}
-	
-	mass_checks(p, "model_starformation_and_feedback.c", __LINE__);
-	mass_checks(centralgal, "model_starformation_and_feedback.c", __LINE__);
+
+	mass_checks (p, "model_starformation_and_feedback.c", __LINE__);
+	mass_checks (centralgal, "model_starformation_and_feedback.c", __LINE__);
 }
 // end starformation
 
@@ -299,20 +297,20 @@ void starformation( int p, int centralgal, double time, double dt, int nstep ) {
 /** @brief 																											  */
 #ifndef H2_AND_RINGS
 
-void update_stars_due_to_reheat( int p, int centralgal, double *stars )
+void update_stars_due_to_reheat (int p, int centralgal, double*stars)
 #else // H2_AND_RINGS
 void update_stars_due_to_reheat( int p, int centralgal, double *stars, double starsRings[] )
 #endif // H2_AND_RINGS
 {
 	double reheated_mass, frac, Radius_low = 0.;
-	#ifndef H2_AND_RINGS
-	reheated_mass = compute_SN_reheat(p, centralgal, *stars, Gal[p].ColdGas, metals_total(Gal[p].MetalsColdGas),
-	                                  Radius_low, Gal[p].ColdGasRadius);
-	if ((*stars + reheated_mass) > Gal[p].ColdGas ) {
+#ifndef H2_AND_RINGS
+	reheated_mass = compute_SN_reheat (p, centralgal, *stars, Gal[p].ColdGas, metals_total (Gal[p].MetalsColdGas),
+	                                   Radius_low, Gal[p].ColdGasRadius);
+	if ((*stars + reheated_mass) > Gal[p].ColdGas) {
 		frac = Gal[p].ColdGas / (*stars + reheated_mass);
 		*stars *= frac;
 	}
-	#else // H2_AND_RINGS
+#else // H2_AND_RINGS
 	int jj;
 	for ( jj = 0; jj < RNUM; jj++ ) {
 		if ( jj > 0 ) {
@@ -326,7 +324,7 @@ void update_stars_due_to_reheat( int p, int centralgal, double *stars, double st
 		}
 		*stars += starsRings[jj];
 	}
-	#endif // H2_AND_RINGS
+#endif // H2_AND_RINGS
 }
 // end update_stars_due_to_reheat
 
@@ -352,53 +350,53 @@ void update_stars_due_to_reheat( int p, int centralgal, double *stars, double st
  * spin. 																											  */
 #ifndef H2_AND_RINGS
 
-void update_from_star_formation( int p, double stars, char type_of_event[], int nstep )
+void update_from_star_formation (int p, double stars, char type_of_event[], int nstep)
 #else // H2_AND_RINGS
 void update_from_star_formation(int p, double stars, double starsRings[], char type_of_event[], int nstep)
 #endif // H2_AND_RINGS
 {
 	int    ii;
 	double stars_to_add = 0., NonRecycledFraction = 0.;
-	#ifdef H2_AND_RINGS
+#ifdef H2_AND_RINGS
 	int jj;
 	double stars_to_addr[RNUM], fractionRings[RNUM];
-	#else // H2_AND_RINGS
+#else // H2_AND_RINGS
 	double fraction;
-	#endif // H2_AND_RINGS
-	if ( Gal[p].ColdGas <= 0. || stars <= 0. ) {
-		printf("Gal[p].ColdGas <= 0. || stars <= 0., Coldgas=%0.5e stars=%0.5e, in function update_from_star_formation, "
-		       "model_starformation_and_feedback.c line:%d\n", Gal[p].ColdGas, stars, __LINE__);
-		exit(0);
+#endif // H2_AND_RINGS
+	if (Gal[p].ColdGas <= 0. || stars <= 0.) {
+		printf ("Gal[p].ColdGas <= 0. || stars <= 0., Coldgas=%0.5e stars=%0.5e, in function update_from_star_formation, "
+		        "model_starformation_and_feedback.c line:%d\n", Gal[p].ColdGas, stars, __LINE__);
+		exit (0);
 	}
-	
+
 	// If DETAILED_METALS_AND_MASS_RETURN, no longer an assumed instantaneous recycled fraction. Mass is returned over
 	// time via SNe and AGB winds. Update the Stellar Spin when forming stars.
-	#ifndef DETAILED_METALS_AND_MASS_RETURN
+#ifndef DETAILED_METALS_AND_MASS_RETURN
 	NonRecycledFraction = (1 - RecycleFraction);
-	#else // DETAILED_METALS_AND_MASS_RETURN
+#else // DETAILED_METALS_AND_MASS_RETURN
 	NonRecycledFraction = 1.;
-	#endif // DETAILED_METALS_AND_MASS_RETURN
-	
-	#ifndef H2_AND_RINGS
+#endif // DETAILED_METALS_AND_MASS_RETURN
+
+#ifndef H2_AND_RINGS
 	stars_to_add = NonRecycledFraction * stars;
-	#else // H2_AND_RINGS
+#else // H2_AND_RINGS
 	for ( jj = 0; jj < RNUM; jj++ ) {
 		stars_to_addr[jj] = NonRecycledFraction * starsRings[jj];
 		stars_to_add += stars_to_addr[jj];
 	}
-	#endif //H2_AND_RINGS
-	
-	if ( Gal[p].DiskMass + stars_to_add > 1.e-8 ) {
-		for ( ii = 0; ii < 3; ii ++ ) {
+#endif //H2_AND_RINGS
+
+	if (Gal[p].DiskMass + stars_to_add > 1.e-8) {
+		for (ii = 0; ii < 3; ii ++) {
 			Gal[p].DiskSpin[ii] = ((Gal[p].DiskSpin[ii]) * (Gal[p].DiskMass) + stars_to_add * Gal[p].ColdGasSpin[ii]) /
 			                      (Gal[p].DiskMass + stars_to_add);
 		}
 	}
-	
-	mass_checks(p, "model_starformation_and_feedback.c", __LINE__);
-	
+
+	mass_checks (p, "model_starformation_and_feedback.c", __LINE__);
+
 	//  Update Gas and Metals from star formation.
-	#ifdef H2_AND_RINGS
+#ifdef H2_AND_RINGS
 	for ( jj = 0; jj < RNUM; jj++ ) {
 		if ( Gal[p].ColdGasRings[jj] > 0. ) {
 			fractionRings[jj] = stars_to_addr[jj] / Gal[p].ColdGasRings[jj];
@@ -409,83 +407,83 @@ void update_from_star_formation(int p, double stars, double starsRings[], char t
 	}
 	transfer_material_with_rings(p, "DiskMass", p, "ColdGas", fractionRings, "model_starformation_and_feedback.c",
 								 __LINE__);
-	#else // H2_AND_RINGS
+#else // H2_AND_RINGS
 	fraction = stars_to_add / Gal[p].ColdGas;
-	transfer_material(p, "DiskMass", p, "ColdGas", fraction, "model_starformation_and_feedback.c", __LINE__);
-	#endif // H2_AND_RINGS
-	
-	
+	transfer_material (p, "DiskMass", p, "ColdGas", fraction, "model_starformation_and_feedback.c", __LINE__);
+#endif // H2_AND_RINGS
+
+
 	// For this calculation we want just the long lived mass and take the instantaneous recycling approximation even
 	// for the detailed chemical enrichment because it is not possible to know which component to eject mass from
 	// afterwards.
-	#ifdef TRACK_MASSGROWTH_CHANNELS
+#ifdef TRACK_MASSGROWTH_CHANNELS
 	double long_lived_mass;
 	long_lived_mass = stars_to_add;
-	#ifdef DETAILED_METALS_AND_MASS_RETURN
+#ifdef DETAILED_METALS_AND_MASS_RETURN
 	long_lived_mass *= (1 - RecycleFraction);
-	#endif // DETAILED_METALS_AND_MASS_RETURN
+#endif // DETAILED_METALS_AND_MASS_RETURN
 
 	if ( strcmp(type_of_event, "insitu") == 0 ) {
 		Gal[p].MassFromInSitu += long_lived_mass;
-		#ifdef STAR_FORMATION_HISTORY
-		#ifdef TRACK_SFH_MASSGROWTH_CHANNELS
+#ifdef STAR_FORMATION_HISTORY
+#ifdef TRACK_SFH_MASSGROWTH_CHANNELS
 		Gal[p].sfh_MassFromInSitu[Gal[p].sfh_ibin] += long_lived_mass;
-		#endif // STAR_FORMATION_HISTORY
-		#endif // TRACK_SFH_MASSGROWTH_CHANNELS
+#endif // STAR_FORMATION_HISTORY
+#endif // TRACK_SFH_MASSGROWTH_CHANNELS
 	}
 
 	if ( strcmp(type_of_event, "merger") == 0 ) {
 		Gal[p].MassFromBursts +=
 				long_lived_mass;
-				#ifdef STAR_FORMATION_HISTORY
-				#ifdef TRACK_SFH_MASSGROWTH_CHANNELS
+#ifdef STAR_FORMATION_HISTORY
+#ifdef TRACK_SFH_MASSGROWTH_CHANNELS
 		Gal[p].sfh_MassFromBursts[Gal[p].sfh_ibin] += long_lived_mass;
-		#endif // STAR_FORMATION_HISTORY
-		#endif // TRACK_SFH_MASSGROWTH_CHANNELS
+#endif // STAR_FORMATION_HISTORY
+#endif // TRACK_SFH_MASSGROWTH_CHANNELS
 	}
-	#endif //TRACK_MASSGROWTH_CHANNELS
-	
-	#ifdef TRACK_BURST
+#endif //TRACK_MASSGROWTH_CHANNELS
+
+#ifdef TRACK_BURST
 	if ( strcmp(type_of_event, "merger") == 0 ) {
 		Gal[p].BurstMass += stars_to_add;
-		#ifdef STAR_FORMATION_HISTORY
+#ifdef STAR_FORMATION_HISTORY
 		Gal[p].sfh_BurstMass[Gal[p].sfh_ibin] += stars_to_add;
-		#endif // STAR_FORMATION_HISTORY
+#endif // STAR_FORMATION_HISTORY
 	}
-	#endif // TRACK_BURST
-	
-	mass_checks(p, "model_starformation_and_feedback.c", __LINE__);
-	
-	if ( FeedbackReheatingModel == 0 || FeedbackReheatingModel == 1 ) {
+#endif // TRACK_BURST
+
+	mass_checks (p, "model_starformation_and_feedback.c", __LINE__);
+
+	if (FeedbackReheatingModel == 0 || FeedbackReheatingModel == 1) {
 		// stars (instead of star_to_add) used because the Yield is defined as a fraction of all stars formed, not just
 		// long lived.
-		#ifdef DETAILED_METALS_AND_MASS_RETURN
-		#ifdef METALS_SELF
+#ifdef DETAILED_METALS_AND_MASS_RETURN
+#ifdef METALS_SELF
 		Gal[p].MetalsHotGasSelf.type2 += Yield * FracZtoHot * stars;
-		#endif // METALS_SELF
-		#else //DETAILED_METALS_AND_MASS_RETURN
+#endif // METALS_SELF
+#else //DETAILED_METALS_AND_MASS_RETURN
 		// This part is not used if OPT+=DELAYED_ENRICHMENT_AND MASS_RETURN as yield and recycling fraction are not
 		// fixed.
-		#ifndef H2_AND_RINGS
+#ifndef H2_AND_RINGS
 		Gal[p].MetalsColdGas += Yield * (1. - FracZtoHot) * stars;
-		#else // H2_AND_RINGS
+#else // H2_AND_RINGS
 		for ( jj = 0; jj < RNUM; jj++ ) {
 			Gal[p].MetalsColdGasRings[jj] += Yield * (1. - FracZtoHot) * starsRings[jj];
 			Gal[p].MetalsColdGas += Yield * (1. - FracZtoHot) * starsRings[jj];
 		}
-		#endif // H2_AND_RINGS
+#endif // H2_AND_RINGS
 		Gal[Gal[p].CentralGal].MetalsHotGas += Yield * FracZtoHot * stars;
 		Gal[Gal[p].CentralGal].HotGas += Yield * FracZtoHot * stars;
-		#ifdef METALS_SELF
+#ifdef METALS_SELF
 		Gal[p].MetalsHotGasSelf += Yield * FracZtoHot * stars;
-		#endif // METALS_SELF
-		#endif //DETAILED_METALS_AND_MASS_RETURN
+#endif // METALS_SELF
+#endif //DETAILED_METALS_AND_MASS_RETURN
 	}
-	
-	mass_checks(p, "model_starformation_and_feedback.c", __LINE__);
-	
-	if ( DiskRadiusModel == 0 ) {
-		Gal[p].DiskRadius = get_stellar_disk_radius(p);
+
+	mass_checks (p, "model_starformation_and_feedback.c", __LINE__);
+
+	if (DiskRadiusModel == 0) {
+		Gal[p].DiskRadius = get_stellar_disk_radius (p);
 	}
 }
 // end update_from_star_formation
@@ -512,7 +510,7 @@ void update_from_star_formation(int p, double stars, double starsRings[], char t
  * returned to the cold gas - reheat and ejection; and when the mass is returned to the hot gas - only ejection.	  */
 #ifndef H2_AND_RINGS
 
-void SN_feedback( int p, int centralgal, double stars, char feedback_location[] )
+void SN_feedback (int p, int centralgal, double stars, char feedback_location[])
 #else // H2_AND_RINGS
 void SN_feedback(int p, int centralgal, double stars, double starsRings[], char feedback_location[])
 #endif // H2_AND_RINGS
@@ -520,23 +518,22 @@ void SN_feedback(int p, int centralgal, double stars, double starsRings[], char 
 	double EjectVmax, EjectVvir, SN_Energy, Reheat_Energy, ReScaled_EnergySNcode, Radius_low;
 	double reheated_mass = 0., ejected_mass = 0.;
 	// SN FEEDBACK RECIPES
-	#ifdef H2_AND_RINGS
+#ifdef H2_AND_RINGS
 	double reheated_massr[RNUM];
 	int jj;
-	#endif // H2_AND_RINGS
-	
+#endif // H2_AND_RINGS
+
 	Radius_low = 0.;
 	//REHEAT
-	#ifndef H2_AND_RINGS
+#ifndef H2_AND_RINGS
 	//when FEEDBACK_COUPLED_WITH_MASS_RETURN some mass goes into HOTGAS and does not produce reheating
-	if ( strcmp(feedback_location, "HotGas") == 0 ) {
+	if (strcmp (feedback_location, "HotGas") == 0) {
 		reheated_mass = 0;
+	} else {
+		reheated_mass = compute_SN_reheat (p, centralgal, stars, Gal[p].ColdGas, metals_total (Gal[p].MetalsColdGas),
+		                                   Radius_low, Gal[p].ColdGasRadius);
 	}
-	else {
-		reheated_mass = compute_SN_reheat(p, centralgal, stars, Gal[p].ColdGas, metals_total(Gal[p].MetalsColdGas),
-		                                  Radius_low, Gal[p].ColdGasRadius);
-	}
-	#else // H2_AND_RINGS
+#else // H2_AND_RINGS
 	reheated_mass = 0.0;
 
 	for ( jj = 0; jj < RNUM; jj++ ) {
@@ -559,69 +556,66 @@ void SN_feedback(int p, int centralgal, double stars, double starsRings[], char 
 	if ( reheated_mass > Gal[p].ColdGas ) {
 		reheated_mass = Gal[p].ColdGas;
 	}
-	#endif // H2_AND_RINGS
-	
+#endif // H2_AND_RINGS
+
 	// Determine ejection (for FeedbackEjectionModel 0 we have the dependence on Vmax) Guo2010 - eq 22
 	// Note that satellites can now retain gas and have their own gas cycle.
-	if ( FeedbackEagleScaling == 1 ) {
+	if (FeedbackEagleScaling == 1) {
 		Radius_low            = 0.;
 		ReScaled_EnergySNcode = EnergySNcode *
-		                        EAGLE2015_rescale_of_EnergySN(Gal[p].ColdGas, metals_total(Gal[p].MetalsColdGas),
-		                                                      Radius_low, Gal[p].ColdGasRadius);
-	}
-	else {
+		                        EAGLE2015_rescale_of_EnergySN (Gal[p].ColdGas, metals_total (Gal[p].MetalsColdGas),
+		                                                       Radius_low, Gal[p].ColdGasRadius);
+	} else {
 		ReScaled_EnergySNcode = EnergySNcode;
 	}
-	
-	if ( Gal[Gal[p].CentralGal].Type == 0 ) {
+
+	if (Gal[Gal[p].CentralGal].Type == 0) {
 		EjectVmax = Gal[centralgal].Vmax;
 		EjectVvir = Gal[centralgal].Vvir; // main halo Vvir
-	}
-	else {
+	} else {
 		EjectVmax = Gal[Gal[p].CentralGal].InfallVmax;
 		EjectVvir = Gal[Gal[p].CentralGal].Vvir; // central subhalo Vvir
 	}
-	
-	if ( FeedbackEjectionModel == 0 ) {
+
+	if (FeedbackEjectionModel == 0) {
 		ejected_mass = (FeedbackEjectionEfficiency * (EtaSNcode * ReScaled_EnergySNcode) * stars *
 		                min(1. / FeedbackEjectionEfficiency,
-		                    .5 + 1 / pow(EjectVmax / EjectPreVelocity, EjectSlope)) -
+		                    .5 + 1 / pow (EjectVmax / EjectPreVelocity, EjectSlope)) -
 		                reheated_mass * EjectVvir * EjectVvir) / (EjectVvir * EjectVvir);
-	}
-	else if ( FeedbackEjectionModel == 1 ) //the ejected material is assumed to have V_SN
+	} else if (FeedbackEjectionModel == 1) //the ejected material is assumed to have V_SN
 	{
 		SN_Energy     = 0.5 * stars * (EtaSNcode * ReScaled_EnergySNcode);
 		Reheat_Energy = 0.5 * reheated_mass * EjectVvir * EjectVvir;
-		
+
 		ejected_mass = (SN_Energy - Reheat_Energy) /
 		               (0.5 * FeedbackEjectionEfficiency * (EtaSNcode * ReScaled_EnergySNcode));
-		
+
 		// If VSN^2<Vvir^2 nothing is ejected
-		if ( FeedbackEjectionEfficiency * (EtaSNcode * ReScaled_EnergySNcode) < EjectVvir * EjectVvir ) {
+		if (FeedbackEjectionEfficiency * (EtaSNcode * ReScaled_EnergySNcode) < EjectVvir * EjectVvir) {
 			ejected_mass = 0.0;
 		}
 	}
-	
+
 	// Finished calculating mass exchanges, so just check that none are negative
-	if ( reheated_mass < 0.0 ) {
+	if (reheated_mass < 0.0) {
 		reheated_mass = 0.0;
 	}
-	if ( ejected_mass < 0.0 ) {
+	if (ejected_mass < 0.0) {
 		ejected_mass = 0.0;
 	}
-	
-	
+
+
 	// Update For Feedback: update cold, hot, ejected gas fractions and respective metallicities there are a number of
 	// changes introduced by Guo2010 concerning where the gas ends up.
-	
-	if ( reheated_mass + ejected_mass > 0. ) {
-		#ifndef H2_AND_RINGS
-		update_from_feedback(p, centralgal, reheated_mass, ejected_mass);
-		#else // H2_AND_RINGS
+
+	if (reheated_mass + ejected_mass > 0.) {
+#ifndef H2_AND_RINGS
+		update_from_feedback (p, centralgal, reheated_mass, ejected_mass);
+#else // H2_AND_RINGS
 		update_from_feedback(p, centralgal, reheated_mass, ejected_mass,  reheated_massr);
-		#endif // H2_AND_RINGS
+#endif // H2_AND_RINGS
 	}
-	
+
 }
 // end SN_feedback
 
@@ -646,59 +640,56 @@ void SN_feedback(int p, int centralgal, double stars, double starsRings[], char 
 /** @brief In Guo2010 type 1s can eject, reincorporate gas and get gas from their own satellites (is not sent to the
  * type 0 galaxy as in Delucia2007), for gas flow computations: If satellite is inside Rvir of main halo, Vvir of main
  * halo used If it is outside, the Vvir of its central subhalo is used. 											  */
-double compute_SN_reheat( int p, int centralgal, double stars, double ColdGas, double MetalsColdGas, double Radius_low,
-                          double Radius_high ) {
+double compute_SN_reheat (int p, int centralgal, double stars, double ColdGas, double MetalsColdGas, double Radius_low,
+                          double Radius_high) {
 	double reheated_mass = 0., MergeCentralVvir = 0.;
 	double ReScaled_EnergySNcode;
-	
-	if ( FeedbackEagleScaling == 1 ) {
+
+	if (FeedbackEagleScaling == 1) {
 		ReScaled_EnergySNcode =
-				EnergySNcode * EAGLE2015_rescale_of_EnergySN(ColdGas, MetalsColdGas, Radius_low, Radius_high);
-	}
-	else {
+				EnergySNcode * EAGLE2015_rescale_of_EnergySN (ColdGas, MetalsColdGas, Radius_low, Radius_high);
+	} else {
 		ReScaled_EnergySNcode = EnergySNcode;
 	}
-	
+
 	// Reheat
-	if ( ColdGas > 0. ) {
+	if (ColdGas > 0.) {
 		// Feedback depends on the circular velocity of the host halo Guo2010 - eq 18 & 19
-		if ( FeedbackReheatingModel == 0 ) {
-			if ( Gal[Gal[p].CentralGal].Type == 0 ) {
+		if (FeedbackReheatingModel == 0) {
+			if (Gal[Gal[p].CentralGal].Type == 0) {
 				reheated_mass = FeedbackReheatingEpsilon * stars *
-				                (.5 + 1. / pow(Gal[Gal[p].CentralGal].Vmax / ReheatPreVelocity, ReheatSlope));
-			}
-			else {
+				                (.5 + 1. / pow (Gal[Gal[p].CentralGal].Vmax / ReheatPreVelocity, ReheatSlope));
+			} else {
 				reheated_mass = FeedbackReheatingEpsilon * stars *
-				                (.5 + 1. / pow(Gal[Gal[p].CentralGal].InfallVmax / ReheatPreVelocity, ReheatSlope));
+				                (.5 + 1. / pow (Gal[Gal[p].CentralGal].InfallVmax / ReheatPreVelocity, ReheatSlope));
 			}
-			
-			if ( FeedbackReheatingDeansityScaling == 1 ) {
+
+			if (FeedbackReheatingDeansityScaling == 1) {
 				double SigmaGas;
-				#ifdef H2_AND_RINGS
+#ifdef H2_AND_RINGS
 				SigmaGas = ColdGas / (M_PI * (Radius_high * Radius_high - Radius_low * Radius_low)) / WARM_PHASE_FACTOR
 						   * Clumpingfactor;
-				#else // H2_AND_RINGS
+#else // H2_AND_RINGS
 				SigmaGas = ColdGas / (M_PI * (Radius_high * Radius_high - Radius_low * Radius_low));
-				#endif // H2_AND_RINGS
+#endif // H2_AND_RINGS
 				SigmaGas = SigmaGas * 0.01 * Hubble_h; // convert from 10^10 M_sun/h / (Mpc/h)^2 to (M_sun/pc^2)
-				
-				if ( SigmaGas > 0. ) {
+
+				if (SigmaGas > 0.) {
 					reheated_mass /= SigmaGas;
 				}
 			}
-			
-			if ( reheated_mass * Gal[Gal[p].CentralGal].Vvir * Gal[Gal[p].CentralGal].Vvir >
-			     stars * (EtaSNcode * ReScaled_EnergySNcode)) {
+
+			if (reheated_mass * Gal[Gal[p].CentralGal].Vvir * Gal[Gal[p].CentralGal].Vvir >
+			    stars * (EtaSNcode * ReScaled_EnergySNcode)) {
 				reheated_mass = stars * (EtaSNcode * ReScaled_EnergySNcode) /
 				                (Gal[Gal[p].CentralGal].Vvir * Gal[Gal[p].CentralGal].Vvir);
 			}
 		}
-	}
-	else {
+	} else {
 		reheated_mass = 0.;
 	}
-	
-	if ( reheated_mass > ColdGas ) {
+
+	if (reheated_mass > ColdGas) {
 		reheated_mass = ColdGas;
 	}
 	return reheated_mass;
@@ -724,16 +715,16 @@ double compute_SN_reheat( int p, int centralgal, double stars, double ColdGas, d
 
 
 /** @brief 																											  */
-double EAGLE2015_rescale_of_EnergySN( double ColdGas, double MetalsColdGas, double Radius_low, double Radius_high ) {
+double EAGLE2015_rescale_of_EnergySN (double ColdGas, double MetalsColdGas, double Radius_low, double Radius_high) {
 	double fth_min = 0.3, fth_max = 3.0, nH_birth, nH_grams = 1.6737236e-24, nH_0 = 0.67, fth, metallicity_Z;
-	double z_solar = 0.0127, n = 2 * log(10);
-	
+	double z_solar = 0.0127, n = 2 * log (10);
+
 	metallicity_Z = MetalsColdGas / ColdGas;
 	nH_birth      = ColdGas * UnitMass_in_g / nH_grams /
 	                (4. / 3. * M_PI * UnitLength_in_cm * (Radius_high * Radius_high - Radius_low * Radius_low));
-	
+
 	fth = fth_min +
-	      (fth_max - fth_min) / (1 + pow(metallicity_Z / (0.1 * z_solar), n) * pow(nH_birth / nH_0, - 1. * n));
+	      (fth_max - fth_min) / (1 + pow (metallicity_Z / (0.1 * z_solar), n) * pow (nH_birth / nH_0, - 1. * n));
 	return fth;
 }
 // end EAGLE2015_rescale_of_EnergySN
@@ -759,22 +750,22 @@ double EAGLE2015_rescale_of_EnergySN( double ColdGas, double MetalsColdGas, doub
 /** @brief Updates cold, hot and external gas components due to SN reheating and ejection. 							  */
 #ifndef H2_AND_RINGS
 
-void update_from_feedback( int p, int centralgal, double reheated_mass, double ejected_mass )
+void update_from_feedback (int p, int centralgal, double reheated_mass, double ejected_mass)
 #else // H2_AND_RINGS
 void update_from_feedback( int p, int centralgal, double reheated_mass, double ejected_mass,double reheated_massr[] )
 #endif // H2_AND_RINGS
 {
 	int    merger_centre = 0;
 	double MassRemain    = 0., dis = 0., fraction;
-	#ifdef H2_AND_RINGS
+#ifdef H2_AND_RINGS
 	double fractionRings[RNUM], tmpfractionRings[RNUM], MassRemainRings[RNUM];
 	int jj;
-	#endif // H2_AND_RINGS
-	
-	if ( Gal[p].ColdGas > 0. ) {
+#endif // H2_AND_RINGS
+
+	if (Gal[p].ColdGas > 0.) {
 		// REHEAT if galaxy is a type 1 or a type 2 orbiting a type 1 with hot gas being stripped, some of the reheated
 		// and ejected masses goes to the type 0 and some stays in the type 1
-		#ifdef H2_AND_RINGS
+#ifdef H2_AND_RINGS
 		for ( jj = 0; jj < RNUM; jj++ ) {
 			if ( Gal[p].ColdGasRings[jj] > 0. ) {
 				fractionRings[jj] = reheated_massr[jj] / (Gal[p].ColdGasRings[jj]);
@@ -783,83 +774,81 @@ void update_from_feedback( int p, int centralgal, double reheated_mass, double e
 				fractionRings[jj] = 0.;
 			}
 		}
-		#endif // H2_AND_RINGS
-		
-		if ( Gal[p].Type == 0 ) {
-			#ifdef H2_AND_RINGS
+#endif // H2_AND_RINGS
+
+		if (Gal[p].Type == 0) {
+#ifdef H2_AND_RINGS
 			transfer_material_with_rings(p, "HotGas", p, "ColdGas", fractionRings, "model_starformation_and_feedback.c",
 										 __LINE__);
-			#else // H2_AND_RINGS
-			transfer_material(p, "HotGas", p, "ColdGas", ((float) reheated_mass) / ((float) Gal[p].ColdGas),
-			                  "model_starformation_and_feedback.c", __LINE__);
-			#endif // H2_AND_RINGS
+#else // H2_AND_RINGS
+			transfer_material (p, "HotGas", p, "ColdGas", ((float) reheated_mass) / ((float) Gal[p].ColdGas),
+			                   "model_starformation_and_feedback.c", __LINE__);
+#endif // H2_AND_RINGS
 		}
-			
+
 			// For satellite galaxies compute how much gas stays in the galaxy and how much goes to central companion
-		else if ( Gal[p].Type < 3 ) {
-			if ( Gal[p].Type == 1 ) {
+		else if (Gal[p].Type < 3) {
+			if (Gal[p].Type == 1) {
 				merger_centre = centralgal;
-			}
-			else if ( Gal[p].Type == 2 ) {
+			} else if (Gal[p].Type == 2) {
 				merger_centre = Gal[p].CentralGal;
 			}
-			
+
 			// If no hot gas in type 2's, share gas between  0 and 1.
-			if ( HotGasOnType2Galaxies == 0 ) {
-				dis = separation_gal(centralgal, Gal[p].CentralGal) / (1 + ZZ[Halo[Gal[centralgal].HaloNr].SnapNum]);
+			if (HotGasOnType2Galaxies == 0) {
+				dis = separation_gal (centralgal, Gal[p].CentralGal) / (1 + ZZ[Halo[Gal[centralgal].HaloNr].SnapNum]);
 			}
 				// If hot gas in type 2's, share gas between itself and merger centre
-			else if ( HotGasOnType2Galaxies == 1 ) {
-				dis = separation_gal(merger_centre, p) / (1 + ZZ[Halo[Gal[centralgal].HaloNr].SnapNum]);
+			else if (HotGasOnType2Galaxies == 1) {
+				dis = separation_gal (merger_centre, p) / (1 + ZZ[Halo[Gal[centralgal].HaloNr].SnapNum]);
 			}
-			
+
 			// Compute share of reheated mass
 			if ((dis < Gal[centralgal].Rvir && Gal[Gal[p].CentralGal].Type == 1 && HotGasOnType2Galaxies == 0) ||
 			    (dis < Gal[merger_centre].Rvir && HotGasOnType2Galaxies == 1)) {
 				//mass that remains on type1 (the rest goes to type 0) for reheat - MassRemain, for eject - ejected_mass
 				MassRemain   = reheated_mass * Gal[p].HotRadius / Gal[p].Rvir;
 				ejected_mass = ejected_mass * Gal[p].HotRadius / Gal[p].Rvir;
-				if ( MassRemain > reheated_mass ) {
+				if (MassRemain > reheated_mass) {
 					MassRemain = reheated_mass;
 				}
-				#ifdef H2_AND_RINGS
+#ifdef H2_AND_RINGS
 				for ( jj     = 0; jj < RNUM; jj++ ) {
 					MassRemainRings[jj] = reheated_massr[jj] * Gal[p].HotRadius / Gal[p].Rvir;
 					if ( MassRemainRings[jj] > reheated_massr[jj] ) {
 						MassRemainRings[jj] = reheated_massr[jj];
 					}
 				}
-				#endif // H2_AND_RINGS
-			}
-			else {
+#endif // H2_AND_RINGS
+			} else {
 				MassRemain = reheated_mass;
-				#ifdef H2_AND_RINGS
+#ifdef H2_AND_RINGS
 				for ( jj   = 0; jj < RNUM; jj++ ) {
 					MassRemainRings[jj] = reheated_massr[jj];
 				}
-				#endif // H2_AND_RINGS
+#endif // H2_AND_RINGS
 			}
-			
+
 			// Needed due to precision issues, since we first remove MassRemain and then (reheated_mass-MassRemain)
 			// from the satellite into the type 0 and type 1 the fraction might not add up on the second call since
 			// Gal[p].ColdGas is a float and reheated_mass & MassRemain are doubles
-			if ((MassRemain + reheated_mass) > Gal[p].ColdGas ) {
+			if ((MassRemain + reheated_mass) > Gal[p].ColdGas) {
 				MassRemain = Gal[p].ColdGas - reheated_mass;
 			}
-			
-			#ifdef H2_AND_RINGS
+
+#ifdef H2_AND_RINGS
 			for ( jj = 0; jj < RNUM; jj++ ) {
 				if ((MassRemainRings[jj] + reheated_massr[jj]) > Gal[p].ColdGasRings[jj] ) {
 					MassRemainRings[jj] = Gal[p].ColdGasRings[jj] - reheated_massr[jj];
 				}
 			}
-			#endif // H2_AND_RINGS
-			
-			mass_checks(p, "model_starformation_and_feedback.c", __LINE__);
-			
+#endif // H2_AND_RINGS
+
+			mass_checks (p, "model_starformation_and_feedback.c", __LINE__);
+
 			// Transfer MassRemain
-			if ( reheated_mass > 0. ) {
-				#ifdef H2_AND_RINGS
+			if (reheated_mass > 0.) {
+#ifdef H2_AND_RINGS
 				for ( jj = 0; jj < RNUM; jj++ ) {
 					if ( Gal[p].ColdGasRings[jj] > 0. ) {
 						tmpfractionRings[jj] = MassRemainRings[jj] / (Gal[p].ColdGasRings[jj]);
@@ -884,33 +873,31 @@ void update_from_feedback( int p, int centralgal, double reheated_mass, double e
 					transfer_material_with_rings(p, "HotGas", p, "ColdGas", tmpfractionRings,
 												 "model_starformation_and_feedback.c", __LINE__);
 				}
-				#else // H2_AND_RINGS
-				if ( HotGasOnType2Galaxies == 0 ) {
+#else // H2_AND_RINGS
+				if (HotGasOnType2Galaxies == 0) {
 					// Transfer to itself if type 1, merger centre if type 2
-					if ( Gal[p].CentralGal == p ) {
-						transfer_material(Gal[p].CentralGal, "HotGas", p, "ColdGas", MassRemain / Gal[p].ColdGas,
-						                  "model_starformation_and_feedback.c", __LINE__);
+					if (Gal[p].CentralGal == p) {
+						transfer_material (Gal[p].CentralGal, "HotGas", p, "ColdGas", MassRemain / Gal[p].ColdGas,
+						                   "model_starformation_and_feedback.c", __LINE__);
+					} else {
+						transfer_material (Gal[p].CentralGal, "HotGas", p, "ColdGas", MassRemain / Gal[p].ColdGas,
+						                   "model_starformation_and_feedback.c", __LINE__);
 					}
-					else {
-						transfer_material(Gal[p].CentralGal, "HotGas", p, "ColdGas", MassRemain / Gal[p].ColdGas,
-						                  "model_starformation_and_feedback.c", __LINE__);
-					}
-				}
-				else if ( HotGasOnType2Galaxies == 1 ) {
+				} else if (HotGasOnType2Galaxies == 1) {
 					// Transfer to itself
-					transfer_material(p, "HotGas", p, "ColdGas", MassRemain / Gal[p].ColdGas,
-					                  "model_starformation_and_feedback.c", __LINE__);
+					transfer_material (p, "HotGas", p, "ColdGas", MassRemain / Gal[p].ColdGas,
+					                   "model_starformation_and_feedback.c", __LINE__);
 				}
-				#endif
+#endif
 			}
-			
-			mass_checks(p, "model_starformation_and_feedback.c", __LINE__);
-			
+
+			mass_checks (p, "model_starformation_and_feedback.c", __LINE__);
+
 			//transfer reheated_mass-MassRemain from galaxy to the type 0
-			if ( reheated_mass > MassRemain )
-				if ( Gal[p].ColdGas > 0. ) {
+			if (reheated_mass > MassRemain) {
+				if (Gal[p].ColdGas > 0.) {
 					//if the reheat to itself left cold gas below limit do not reheat to central.
-					#ifdef H2_AND_RINGS
+#ifdef H2_AND_RINGS
 					// Cannot use tmpfractionRings defined from fractionRings since Gal[p].ColdGasRings has changed
 					// from MassRemain above
 					for ( jj = 0; jj < RNUM; jj++ ) {
@@ -931,90 +918,85 @@ void update_from_feedback( int p, int centralgal, double reheated_mass, double e
 						transfer_material_with_rings(merger_centre, "HotGas", p, "ColdGas", fractionRings,
 													 "model_starformation_and_feedback.c", __LINE__);
 					}
-					#else // H2_AND_RINGS
+#else // H2_AND_RINGS
 					// With rings ColdGas is a double and using (float) might cause
 					// (float)(reheated_mass-MassRemain)/Gal[p].ColdGas to be >1
 					// Transfer to type 0
-					if ( HotGasOnType2Galaxies == 0 ) {
-						transfer_material(centralgal, "HotGas", p, "ColdGas",
-						                  (float) (reheated_mass - MassRemain) / Gal[p].ColdGas,
-						                  "model_starformation_and_feedback.c", __LINE__);
+					if (HotGasOnType2Galaxies == 0) {
+						transfer_material (centralgal, "HotGas", p, "ColdGas",
+						                   (float) (reheated_mass - MassRemain) / Gal[p].ColdGas,
+						                   "model_starformation_and_feedback.c", __LINE__);
 					}
 						// Transfer to merger centre
-					else if ( HotGasOnType2Galaxies == 1 ) {
-						transfer_material(merger_centre, "HotGas", p, "ColdGas",
-						                  (float) (reheated_mass - MassRemain) / Gal[p].ColdGas,
-						                  "model_starformation_and_feedback.c", __LINE__);
+					else if (HotGasOnType2Galaxies == 1) {
+						transfer_material (merger_centre, "HotGas", p, "ColdGas",
+						                   (float) (reheated_mass - MassRemain) / Gal[p].ColdGas,
+						                   "model_starformation_and_feedback.c", __LINE__);
 					}
-					#endif //H2_AND_RINGS
+#endif //H2_AND_RINGS
 				}
-			
-			mass_checks(p, "model_starformation_and_feedback.c", __LINE__);
+			}
+
+			mass_checks (p, "model_starformation_and_feedback.c", __LINE__);
 		} // else if ( Gal[p].Type < 3 )
-		
+
 	} // if ( Gal[p].ColdGas > 0. )
-	
+
 	// Do ejection of gas
 	if ((Gal[Gal[p].CentralGal].HotGas > 0. && HotGasOnType2Galaxies == 0) ||
 	    (Gal[p].HotGas > 0. && HotGasOnType2Galaxies == 1)) {
-		if ( HotGasOnType2Galaxies == 0 ) {
-			if ( ejected_mass > Gal[Gal[p].CentralGal].HotGas )
+		if (HotGasOnType2Galaxies == 0) {
+			if (ejected_mass > Gal[Gal[p].CentralGal].HotGas)
 				// Either eject own gas or merger_centre gas for ttype 2's
 			{
 				ejected_mass = Gal[Gal[p].CentralGal].HotGas;
 			}
 			fraction = ((float) ejected_mass) / Gal[Gal[p].CentralGal].HotGas;
-		}
-		else if ( HotGasOnType2Galaxies == 1 ) {
-			if ( ejected_mass > Gal[p].HotGas && HotGasOnType2Galaxies == 1 ) {
+		} else if (HotGasOnType2Galaxies == 1) {
+			if (ejected_mass > Gal[p].HotGas && HotGasOnType2Galaxies == 1) {
 				// Always eject own gas
 				ejected_mass = Gal[p].HotGas;
 			}
 			fraction = ((float) ejected_mass) / Gal[p].HotGas;
 		}
-		
-		if ( Gal[Gal[p].CentralGal].Type == 1 ) {
+
+		if (Gal[Gal[p].CentralGal].Type == 1) {
 			// If type 1, or type 2 orbiting type 1 near type 0
-			if ( FateOfSatellitesGas == 0 ) {
-				if ( HotGasOnType2Galaxies == 0 ) {
-					transfer_material(Gal[p].CentralGal, "EjectedMass", Gal[p].CentralGal, "HotGas", fraction,
-					                  "model_starformation_and_feedback.c", __LINE__);
+			if (FateOfSatellitesGas == 0) {
+				if (HotGasOnType2Galaxies == 0) {
+					transfer_material (Gal[p].CentralGal, "EjectedMass", Gal[p].CentralGal, "HotGas", fraction,
+					                   "model_starformation_and_feedback.c", __LINE__);
+				} else if (HotGasOnType2Galaxies == 1) {
+					transfer_material (Gal[p].CentralGal, "EjectedMass", p, "HotGas", fraction,
+					                   "model_starformation_and_feedback.c", __LINE__);
 				}
-				else if ( HotGasOnType2Galaxies == 1 ) {
-					transfer_material(Gal[p].CentralGal, "EjectedMass", p, "HotGas", fraction,
-					                  "model_starformation_and_feedback.c", __LINE__);
-				}
-			}
-			else if ( FateOfSatellitesGas == 1 ) {
-				if ( dis < Gal[centralgal].Rvir ) {
-					transfer_material(centralgal, "HotGas", Gal[p].CentralGal, "HotGas", fraction,
-					                  "model_starformation_and_feedback.c", __LINE__);
-				}
-				else {
-					transfer_material(Gal[p].CentralGal, "EjectedMass", Gal[p].CentralGal, "HotGas", fraction,
-					                  "model_starformation_and_feedback.c", __LINE__);
+			} else if (FateOfSatellitesGas == 1) {
+				if (dis < Gal[centralgal].Rvir) {
+					transfer_material (centralgal, "HotGas", Gal[p].CentralGal, "HotGas", fraction,
+					                   "model_starformation_and_feedback.c", __LINE__);
+				} else {
+					transfer_material (Gal[p].CentralGal, "EjectedMass", Gal[p].CentralGal, "HotGas", fraction,
+					                   "model_starformation_and_feedback.c", __LINE__);
 				}
 			}
-		}
-		else {
+		} else {
 			// If galaxy type 0 or type 2 merging into type 0
-			if ( HotGasOnType2Galaxies == 0 ) {
-				transfer_material(centralgal, "EjectedMass", Gal[p].CentralGal, "HotGas", fraction,
-				                  "model_starformation_and_feedback.c", __LINE__);
-			}
-			else if ( HotGasOnType2Galaxies == 1 ) {
-				transfer_material(centralgal, "EjectedMass", p, "HotGas", fraction,
-				                  "model_starformation_and_feedback.c", __LINE__);
+			if (HotGasOnType2Galaxies == 0) {
+				transfer_material (centralgal, "EjectedMass", Gal[p].CentralGal, "HotGas", fraction,
+				                   "model_starformation_and_feedback.c", __LINE__);
+			} else if (HotGasOnType2Galaxies == 1) {
+				transfer_material (centralgal, "EjectedMass", p, "HotGas", fraction,
+				                   "model_starformation_and_feedback.c", __LINE__);
 			}
 		}
-		
+
 	} // (Gal[Gal[p].CentralGal].HotGas > 0.)
-	
-	#ifdef H2_AND_RINGS
+
+#ifdef H2_AND_RINGS
 	update_h2fraction(p);
-	#endif // H2_AND_RINGS
-	
-	mass_checks(p, "model_starformation_and_feedback.c", __LINE__);
+#endif // H2_AND_RINGS
+
+	mass_checks (p, "model_starformation_and_feedback.c", __LINE__);
 }
 // end update_from_feedback
 
@@ -1037,17 +1019,17 @@ void update_from_feedback( int p, int centralgal, double reheated_mass, double e
 
 
 /** @brief 																											  */
-void update_massweightage( int p, double stars, double time ) {
+void update_massweightage (int p, double stars, double time) {
 	int    outputbin;
 	double age; // age in Mpc/Km/s/h - code units
-	
-	for ( outputbin = 0; outputbin < NOUT; outputbin ++ ) {
-		age = time - NumToTime(ListOutputSnaps[outputbin]);
-		#ifdef DETAILED_METALS_AND_MASS_RETURN
+
+	for (outputbin = 0; outputbin < NOUT; outputbin ++) {
+		age = time - NumToTime (ListOutputSnaps[outputbin]);
+#ifdef DETAILED_METALS_AND_MASS_RETURN
 		Gal[p].MassWeightAge[outputbin] += age * stars;
-		#else
+#else
 		Gal[p].MassWeightAge[outputbin] += age * stars * (1. - RecycleFraction);
-		#endif
+#endif
 	}
 }
 // end update_massweightage
@@ -1074,31 +1056,31 @@ void update_massweightage( int p, double stars, double time ) {
  * required amount is transfered to the bulge to make the disk stable again. Mass, metals and luminosities updated.
  * After Guo2010 the bulge size is followed and needs to be updated. Eq 34 & 35 in Guo2010 are used. 				  */
 
-void check_disk_instability( int p, double dt, double time ) {
-	
-	#ifdef DI_INSTABILITIES
+void check_disk_instability (int p, double dt, double time) {
+
+#ifdef DI_INSTABILITIES
 	double Mcrit, unstablemass, coldgas, gaseousdisksize, stellardisk, stellardisksize, BhGrowth, starburst;
 	double stellarfraction, bhfraction;
 	int j;
-	#ifdef COMPUTE_SPECPHOT_PROPERTIES
-	#ifndef POST_PROCESS_MAGS
+#ifdef COMPUTE_SPECPHOT_PROPERTIES
+#ifndef POST_PROCESS_MAGS
 	double metallicitySF;
-	#endif // POST_PROCESS_MAGS
-	#endif // COMPUTE_SPECPHOT_PROPERTIES
-	#ifdef H2_AND_RINGS
+#endif // POST_PROCESS_MAGS
+#endif // COMPUTE_SPECPHOT_PROPERTIES
+#ifdef H2_AND_RINGS
 	double mstarsRings[RNUM];
 	int j;
-	#endif // H2_AND_RINGS
-	#else // DI_INSTABILITIES
+#endif // H2_AND_RINGS
+#else // DI_INSTABILITIES
 	double Mcrit, fraction, stars, diskmass;
-	#endif // DI_INSTABILITIES
-	
-	#ifdef H2_AND_RINGS
+#endif // DI_INSTABILITIES
+
+#ifdef H2_AND_RINGS
 	double rstar, vmax;
 	int j;
-	#endif // H2_AND_RINGS
+#endif // H2_AND_RINGS
 
-	#ifdef DI_INSTABILITIES
+#ifdef DI_INSTABILITIES
 	// First check the stability of the gaseous disk.
 	
 	coldgas         = Gal[p].ColdGas;
@@ -1148,24 +1130,24 @@ void check_disk_instability( int p, double dt, double time ) {
 		// Deal with the disk instability-induced starburst feedback.
 		
 		//Store the value of the metallicity of the cold phase when SF occurs. Used to update luminosities below.
-		#ifdef COMPUTE_SPECPHOT_PROPERTIES
-		#ifndef POST_PROCESS_MAGS
+#ifdef COMPUTE_SPECPHOT_PROPERTIES
+#ifndef POST_PROCESS_MAGS
 		metallicitySF = metals_total(Gal[p].MetalsColdGas) / Gal[p].ColdGas;
-		#endif // POST_PROCESS_MAGS
-		#endif // COMPUTE_SPECPHOT_PROPERTIES
-		
+#endif // POST_PROCESS_MAGS
+#endif // COMPUTE_SPECPHOT_PROPERTIES
+
 		// If FEEDBACK_COUPLED_WITH_MASS_RETURN feedback happens only when stars die, no need to balance it with SF.
-		#ifndef FEEDBACK_COUPLED_WITH_MASS_RETURN
+#ifndef FEEDBACK_COUPLED_WITH_MASS_RETURN
 		if ( starburst > 0. ) {
 			update_stars_due_to_reheat(p, Gal[p].CentralGal, &starburst);
 		}
-		#endif //FEEDBACK_COUPLED_WITH_MASS_RETURN
-		
+#endif //FEEDBACK_COUPLED_WITH_MASS_RETURN
+
 		// Update the star formation rate.
 		Gal[p].Sfr += starburst / (dt * STEPS);
-		
+
 		mass_checks(p, "model_starformation_and_feedback.c", __LINE__);
-		
+
 		// Update_from_star_formation can only be called after SN_feeedback recipe since stars need to be re_set once
 		// the reheated mass is known (star formation and feedback share the same fraction of cold gas).
 		int nstep = - 1;
@@ -1173,30 +1155,30 @@ void check_disk_instability( int p, double dt, double time ) {
 			update_from_star_formation(p, starburst, "model_starformation_and_feedback", nstep);
 		}
 		mass_checks(p, "model_starformation_and_feedback.c", __LINE__);
-		
+
 		update_massweightage(p, starburst, time);
-		
-		#ifndef FEEDBACK_COUPLED_WITH_MASS_RETURN
+
+#ifndef FEEDBACK_COUPLED_WITH_MASS_RETURN
 		if ( starburst > 0. ) {
 			SN_feedback(p, Gal[p].CentralGal, starburst, "ColdGas");
 		}
-		#endif // FEEDBACK_COUPLED_WITH_MASS_RETURN
-		
-		#ifdef COMPUTE_SPECPHOT_PROPERTIES
-		#ifndef POST_PROCESS_MAGS
+#endif // FEEDBACK_COUPLED_WITH_MASS_RETURN
+
+#ifdef COMPUTE_SPECPHOT_PROPERTIES
+#ifndef POST_PROCESS_MAGS
 		//		 Update the luminosities due to the stars formed.
 				if ( starburst > 0.0 ) {
 					add_to_luminosities(p, starburst, time, (dt * STEPS) / STEPS, metallicitySF);
 				}
-				#endif // POST_PROCESS_MAGS
-				#endif // COMPUTE_SPECPHOT_PROPERTIES
+#endif // POST_PROCESS_MAGS
+#endif // COMPUTE_SPECPHOT_PROPERTIES
 	} // if (unstablemass > 0.0)
-	
+
 	// Then check the stability of the stellar disk.
-	
+
 	stellardisk           = Gal[p].DiskMass;
 	stellardisksize = Gal[p].DiskRadius / 3.;
-	
+
 	// Check stellar disk by using eq. 34 Guo2010.
 	if ( Gal[p].Type != 0 ) {
 		Mcrit = Gal[p].InfallVmax * Gal[p].InfallVmax * stellardisksize / G;
@@ -1204,25 +1186,25 @@ void check_disk_instability( int p, double dt, double time ) {
 	else {
 		Mcrit = Gal[p].Vmax * Gal[p].Vmax * stellardisksize / G;
 	}
-	
+
 	mass_checks(p, "model_starformation_and_feedback.c", __LINE__);
-	
+
 	// Calculate the unstable stellar mass.
 	unstablemass    = stellardisk - Mcrit;
 	stellarfraction = unstablemass / stellardisk;
-	
+
 	// Add excess stars to the bulge.
 	if ( unstablemass > 0.0 ) {
 		// Calculate the bulge size, the bulge will be formed in the same place as the disk was
 		update_bulgesize_from_stellardisk_instability(p, unstablemass);
-		
+
 		// The disk has to regain dynamical equilibrium by transporting mass to the bulge. We store the mass
 		// transferred (unstablemass) from the disk to the bulge which represents the instability-driven bulge mass.
 		Gal[p].PBMass += unstablemass;
 		transfer_material(p, "BulgeMass", p, "DiskMass", stellarfraction, "model_starformation_and_feedback.c",
 						  __LINE__);
-		
-						  #ifdef BULGESIZE_DEBUG
+
+#ifdef BULGESIZE_DEBUG
 		mass_checks(p, "model_starformation_and_feedback.c", __LINE__);
 
 		if ((Gal[p].BulgeMass > 1e-9 && Gal[p].BulgeSize == 0.0) ||
@@ -1232,22 +1214,21 @@ void check_disk_instability( int p, double dt, double time ) {
 			printf("BulgeMass=%g BulgeSize=%g\n", Gal[p].BulgeMass, Gal[p].BulgeSize);
 			terminate(sbuf);
 		}
-		#endif // BULGESIZE_DEBUG
+#endif // BULGESIZE_DEBUG
 	} // if(unstablemass > 0.0)
-	
-	#else // DI_INSTABILITIES
-	
+
+#else // DI_INSTABILITIES
+
 	diskmass = Gal[p].DiskMass;
-	
-	#ifndef H2_AND_RINGS
+
+#ifndef H2_AND_RINGS
 	// Check stellar disk -> eq 34 Guo2010
-	if ( Gal[p].Type != 0 ) {
+	if (Gal[p].Type != 0) {
 		Mcrit = Gal[p].InfallVmax * Gal[p].InfallVmax * Gal[p].DiskRadius / G;
-	}
-	else {
+	} else {
 		Mcrit = Gal[p].Vmax * Gal[p].Vmax * Gal[p].DiskRadius / G;
 	}
-	#else // H2_AND_RINGS
+#else // H2_AND_RINGS
 	if ( diskmass < 1.0e-6 ) {
 		rstar = 0.5 * RingRadius[0];
 	}
@@ -1267,20 +1248,20 @@ void check_disk_instability( int p, double dt, double time ) {
 	}
 
 	Mcrit = vmax * vmax * rstar / G;
-	#endif // H2_AND_RINGS
-	mass_checks(p, "model_starformation_and_feedback.c", __LINE__);
-	
+#endif // H2_AND_RINGS
+	mass_checks (p, "model_starformation_and_feedback.c", __LINE__);
+
 	stars    = diskmass - Mcrit;
 	fraction = stars / diskmass;
-	
+
 	// Add excess stars to the bulge.
-	if ( stars > 0.0 ) {
-		
+	if (stars > 0.0) {
+
 		// Calculate the bulge size and update the disk size.
-		update_bulgesize_from_stellardisk_instability(p, stars);
+		update_bulgesize_from_stellardisk_instability (p, stars);
 		//The bulge will be formed in the same place as the disk was, so the disk rings are transferred directly into
 		// bulge rings
-		#ifdef H2_AND_RINGS
+#ifdef H2_AND_RINGS
 		double dmass, fractionRings[RNUM];
 		for ( j = 0; j < RNUM; j++ ) {
 			fractionRings[j] = 0.;
@@ -1310,18 +1291,18 @@ void check_disk_instability( int p, double dt, double time ) {
 
 		transfer_material_with_rings(p, "BulgeMass", p, "DiskMass", fractionRings, "model_starformation_and_feedback.c",
 									 __LINE__);
-		#else // H2_AND_RINGS
-		
+#else // H2_AND_RINGS
+
 		// Transfer the unstable stars directly to the bulge. The disk has to regain dynamical equilibrium by
 		// transporting mass to the bulge. We store the mass transferred (stars) from the disk to the bulge which
 		// represents the instability-driven bulge mass.
 		Gal[p].PBMass += stars;
-		transfer_material(p, "BulgeMass", p, "DiskMass", fraction, "model_starformation_and_feedback.c", __LINE__);
-		#endif // H2_AND_RINGS
-		
-		if ( BHGrowthInDiskInstabilityModel == 1 )
-			if ( Gal[p].ColdGas > 0. ) {
-				#ifdef H2_AND_RINGS
+		transfer_material (p, "BulgeMass", p, "DiskMass", fraction, "model_starformation_and_feedback.c", __LINE__);
+#endif // H2_AND_RINGS
+
+		if (BHGrowthInDiskInstabilityModel == 1) {
+			if (Gal[p].ColdGas > 0.) {
+#ifdef H2_AND_RINGS
 				for ( j = 0; j < RNUM; j++ ) {
 					fractionRings[j] *=
 							0.1 * BlackHoleGrowthRate / (1.0 + pow2((BlackHoleCutoffVelocity / Gal[p].Vvir)));
@@ -1330,15 +1311,16 @@ void check_disk_instability( int p, double dt, double time ) {
 
 				transfer_material_with_rings(p, "BlackHoleMass", p, "ColdGas", fractionRings,
 											 "model_starformation_and_feedback.c", __LINE__);
-				#else // H2_AND_RINGS
+#else // H2_AND_RINGS
 				fraction *= 0.1 * BlackHoleGrowthRate / (1.0 + pow2((BlackHoleCutoffVelocity / Gal[p].Vvir)));
-				transfer_material(p, "BlackHoleMass", p, "ColdGas", fraction, "model_starformation_and_feedback.c",
-				                  __LINE__);
-				#endif // H2_AND_RINGS
+				transfer_material (p, "BlackHoleMass", p, "ColdGas", fraction, "model_starformation_and_feedback.c",
+				                   __LINE__);
+#endif // H2_AND_RINGS
 				Gal[p].QuasarAccretionRate += fraction * Gal[p].ColdGas / (dt * STEPS);
 			}
-		
-		#ifdef BULGESIZE_DEBUG
+		}
+
+#ifdef BULGESIZE_DEBUG
 		mass_checks(p,"model_starformation_and_feedback.c",__LINE__);
 
 		if ((Gal[p].BulgeMass > TINY_MASS && Gal[p].BulgeSize < TINY_LENGTH)||
@@ -1346,18 +1328,18 @@ void check_disk_instability( int p, double dt, double time ) {
 		printf("BulgeMass=%g BulgeSize=%g\n",Gal[p].BulgeMass,Gal[p].BulgeSize);
 		terminate("bulgesize wrong in disk instablility\n");
 		}
-		#endif // BULGESIZE_DEBUG
-		mass_checks(p, "model_starformation_and_feedback.c", __LINE__);
-		
+#endif // BULGESIZE_DEBUG
+		mass_checks (p, "model_starformation_and_feedback.c", __LINE__);
+
 		if ((Gal[p].BulgeMass > 1e-9 && Gal[p].BulgeSize == 0.0) ||
 		    (Gal[p].BulgeMass == 0.0 && Gal[p].BulgeSize > 1e-9)) {
 			char sbuf[1000];
-			sprintf(sbuf, "bulgesize wrong in disk instablility.c \n");
-			printf("BulgeMass=%g BulgeSize=%g\n", Gal[p].BulgeMass, Gal[p].BulgeSize);
+			sprintf (sbuf, "bulgesize wrong in disk instablility.c \n");
+			printf ("BulgeMass=%g BulgeSize=%g\n", Gal[p].BulgeMass, Gal[p].BulgeSize);
 			terminate(sbuf);
 		}
 	}// if(stars > 0.0)
-	#endif // DI_INSTABILITIES
+#endif // DI_INSTABILITIES
 } //end check_disk_instability
 
 
@@ -1380,57 +1362,55 @@ void check_disk_instability( int p, double dt, double time ) {
 
 /** @brief Updates bulge from disk instability -> stars represents the mass transferred to the bulge, which occupies a
  * size in the bulge equal to that occupied in the disk. 															  */
-void update_bulgesize_from_stellardisk_instability( int p, double stars ) {
+void update_bulgesize_from_stellardisk_instability (int p, double stars) {
 	double bulgemass, bulgesize, diskmass, fint, massfrac;
 	int    j;
-	
+
 	// alpha_inter=2.0/C=0.5 (alpha larger than in mergers since the existing and newly formed bulges are concentric).
 	fint = 4.0;
-	
+
 	// Disk instabilities are assumed to NOT remove angular momentum. Since the mass of the disk changes, the spin is
 	// changed by the same amount to keep angular momentum constant.
-	
-	#ifdef DI_BULGESPIN
+
+#ifdef DI_BULGESPIN
 	bulgemass = Gal[p].BulgeMass;
 	massfrac  = stars / bulgemass;
 	
 	for ( j   = 0; j < 3; j ++ ) {
 		Gal[p].BulgeSpin[j] = Gal[p].BulgeSpin[j] / (1 + massfrac);
 	}
-	#endif // DI_BULGESPIN
-	
+#endif // DI_BULGESPIN
+
 	diskmass = Gal[p].DiskMass;
 	massfrac = stars / diskmass;
-	
-	for ( j = 0; j < 3; j ++ ) {
+
+	for (j = 0; j < 3; j ++) {
 		// if everything is transferred to the bulge
-		if ( massfrac == 1 ) {
+		if (massfrac == 1) {
 			Gal[p].DiskSpin[j] = 0;
-		}
-		else {
+		} else {
 			Gal[p].DiskSpin[j] = Gal[p].DiskSpin[j] / (1 - massfrac);
 		}
 	}
-	if ( DiskRadiusModel == 0 ) {
-		Gal[p].DiskRadius = get_stellar_disk_radius(p);
+	if (DiskRadiusModel == 0) {
+		Gal[p].DiskRadius = get_stellar_disk_radius (p);
 	}
-	
-	#ifndef H2_AND_RINGS
-	#ifdef BULGESIZE_DEBUG
+
+#ifndef H2_AND_RINGS
+#ifdef BULGESIZE_DEBUG
 	double orisize;
 	orisize = Gal[p].BulgeSize;
-	#endif // BULGESIZE_DEBUG
-	
+#endif // BULGESIZE_DEBUG
+
 	// Size of newly formed bulge, which consists of the stellar mass transferred from the disk. This is calculated
 	// using bulge_from_disk which receives Delta_M/DiskMass and returns Rb/Rd. From eq 35 and since
 	// DiskMass=2PISigma(Rd)^2 we see that Delta_M/DiskMass=1-(1+Rb/Rd)*exp(-Rb/Rd), so function bulge_from_disk
 	// avoids calculating the slow "ln" function.
-	bulgesize = bulge_from_disk(massfrac) * Gal[p].DiskRadius / 3.;
-	if ( Gal[p].BulgeMass < TINY_MASS ) {
+	bulgesize = bulge_from_disk (massfrac) * Gal[p].DiskRadius / 3.;
+	if (Gal[p].BulgeMass < TINY_MASS) {
 		// If previous Bulge Mass = 0 then the bulge size is given directly from newly formed bulge
 		Gal[p].BulgeSize = bulgesize;
-	}
-	else {
+	} else {
 		// Combine the old with newly formed bulge and calculate the bulge size assuming energy conservation as for
 		// mergers but using alpha=2. - eq 33 *
 		Gal[p].BulgeSize = (Gal[p].BulgeMass + stars) * (Gal[p].BulgeMass + stars) /
@@ -1440,10 +1420,10 @@ void update_bulgesize_from_stellardisk_instability( int p, double stars ) {
 	}
 	// Added by PAT to see if the cause of low bulge sizes could be propagation of tightly-bound bulges. These originate
 	// in unfeasibly small disks.
-	#define BULGESIZE_MIN 1e-4
+#define BULGESIZE_MIN 1e-4
 	//	Gal[p].BulgeSize = max(Gal[p].BulgeSize, BULGESIZE_MIN);
-	
-	#ifdef BULGESIZE_DEBUG
+
+#ifdef BULGESIZE_DEBUG
 	if ((Gal[p].BulgeMass + stars > TINY_MASS && Gal[p].BulgeSize < TINY_LENGTH)
 		|| (Gal[p].BulgeMass + stars < TINY_MASS && Gal[p].BulgeSize > TINY_LENGTH)) {
 		printf("Original DiskMass=%e, DiskSize=%e\nOriginal BulgeMass=%e, BulgeSize=%e\nTransferred stars=%e,"
@@ -1451,9 +1431,9 @@ void update_bulgesize_from_stellardisk_instability( int p, double stars ) {
 			   Gal[p].BulgeMass, orisize, stars, bulgesize, Gal[p].BulgeMass + stars, Gal[p].BulgeSize);
 		terminate("bulgesize or mass wrong in disk instablility");
 	}
-	#endif // BULGESIZE_DEBUG
-	#else //H2_AND_RINGS
-	
+#endif // BULGESIZE_DEBUG
+#else //H2_AND_RINGS
+
 	// Size of new formed bulge, which consist of the stellar mass trasfered from the disk combine the old bulge with
 	// the new materials and caculate the bulge size assuming energy conservation
 	diskmass = stars;
@@ -1492,7 +1472,7 @@ void update_bulgesize_from_stellardisk_instability( int p, double stars ) {
 						   (Gal[p].BulgeMass * Gal[p].BulgeMass / Gal[p].BulgeSize + stars * stars / bulgesize +
 							fint * Gal[p].BulgeMass * stars / (Gal[p].BulgeSize + bulgesize));
 	}
-	#endif //H2_AND_RINGS
+#endif //H2_AND_RINGS
 }
 // end update_bulgesize_from_stellardisk_instability
 
@@ -1516,35 +1496,34 @@ void update_bulgesize_from_stellardisk_instability( int p, double stars ) {
 
 /** @brief Calculates the size of the disk that contains the mass transferred to the bulge. The bulge is assumed to
  * form with the same size. avoid doing "ln" from eq 35																  */
-double bulge_from_disk( double frac ) {
+double bulge_from_disk (double frac) {
 	double x1, x2, x0, value;
-	
+
 	x1    = 0.0;
 	x2    = 1.;
-	while ((func_size(x2, frac) * func_size(x1, frac)) > 0 ) {
+	while ((func_size (x2, frac) * func_size (x1, frac)) > 0) {
 		x1 = x2;
 		x2 = x2 * 2;
 	}
 	x0    = x1 + (x2 - x1) / 2.;
-	value = func_size(x0, frac);
-	if ( value < 0 ) {
+	value = func_size (x0, frac);
+	if (value < 0) {
 		value = - value;
 	}
-	
-	while ( value > 0.00001 ) {
-		if ( func_size(x0, frac) * func_size(x2, frac) > 0 ) {
+
+	while (value > 0.00001) {
+		if (func_size (x0, frac) * func_size (x2, frac) > 0) {
 			x2 = x0;
-		}
-		else {
+		} else {
 			x1 = x0;
 		}
 		x0    = x1 + (x2 - x1) / 2.;
-		value = func_size(x0, frac);
-		if ( value < 0 ) {
+		value = func_size (x0, frac);
+		if (value < 0) {
 			value = - value;
 		}
 	}
-	
+
 	return x0;
 }
 // end bulge_from_disk
@@ -1568,8 +1547,8 @@ double bulge_from_disk( double frac ) {
 
 
 /** @brief 																											  */
-double func_size( double x, double a ) {
-	return exp(- x) * (1 + x) - (1 - a);
+double func_size (double x, double a) {
+	return exp (- x) * (1 + x) - (1 - a);
 }
 // end func_size
 
