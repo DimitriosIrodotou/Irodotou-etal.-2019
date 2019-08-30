@@ -167,7 +167,7 @@ void deal_with_galaxy_merger (int p, double time, double deltaT, int nstep) {
 	mass_checks (merger_centralgal, "model_mergers.c", __LINE__);
 	mass_checks (FOF_centralgal, "model_mergers.c", __LINE__);
 
-#ifdef GALAXYTREE
+	#ifdef GALAXYTREE
 	int q;
 
 	q = Gal[merger_centralgal].FirstProgGal;
@@ -194,7 +194,7 @@ void deal_with_galaxy_merger (int p, double time, double deltaT, int nstep) {
 	if ( Gal[p].Type == 1 ) {
 		HaloGal[GalTree[q].HaloGalIndex].MergeOn = 3;
 	}
-#endif // GALAXYTREE
+	#endif // GALAXYTREE
 
 	// Flag galaxy as finished.
 	Gal[p].Type = 3;
@@ -255,14 +255,14 @@ void deal_with_galaxy_merger (int p, double time, double deltaT, int nstep) {
 	// major merger this will then be destroyed with everything moved to the bulge.
 	if (StarBurstModel == 0) {
 		frac = collisional_starburst_recipe (mass_ratio, merger_centralgal, FOF_centralgal, time, deltaT);
-#ifdef DI_BULGESIZE
+		#ifdef DI_BULGESIZE
 		size_of_merger_remnants(mass_ratio, merger_centralgal,  MstarCentral, MbulgeCentral,
 						 MgasCentral, MstarSat,  MgasSat, frac,HMRCentral, HMRSat);
-#else // DI_BULGESIZE
+		#else // DI_BULGESIZE
 		bulgesize_from_merger (mass_ratio, merger_centralgal, p, MstarCentral, MbulgeCentral, MgasCentral,
 		                       MstarSat, MbulgeSat, MgasSat, frac, RgasCentral, RStellarDiskCentral, RgasSat,
 		                       RStellarDiskSat);
-#endif // DI_BULGESIZE
+		#endif // DI_BULGESIZE
 
 		mass_checks (p, "model_mergers.c", __LINE__);
 		mass_checks (merger_centralgal, "model_mergers.c", __LINE__);
@@ -273,7 +273,7 @@ void deal_with_galaxy_merger (int p, double time, double deltaT, int nstep) {
 		}
 	}
 
-#ifdef RINGS_IN_BULGES
+	#ifdef RINGS_IN_BULGES
 	//Bulge Mass was added into the same place as the disk, it will now be redistributed
 	//according to a Jaffe profile and after the new bulge size has been calculated
 
@@ -298,18 +298,18 @@ void deal_with_galaxy_merger (int p, double time, double deltaT, int nstep) {
 		Gal[merger_centralgal].MetalsBulgeMassRings[jj] = metals_add(metals_init(),
 																	 Gal[merger_centralgal].MetalsBulgeMass,
 																	 fractionRings[jj]);
-#ifdef INDIVIDUAL_ELEMENTS
+																	 #ifdef INDIVIDUAL_ELEMENTS
 		int kk;
 		for(kk=0;kk<NUM_ELEMENTS;kk++)
 	  Gal[merger_centralgal].BulgeMassRings_elements[jj][kk] = fractionRings[jj]*Gal[merger_centralgal].BulgeMass_elements[kk];
-#endif // INDIVIDUAL_ELEMENTS
-#ifdef STAR_FORMATION_HISTORY
+	  #endif // INDIVIDUAL_ELEMENTS
+	  #ifdef STAR_FORMATION_HISTORY
 		int ii;
 		for (ii=0; ii<=Gal[p].sfh_ibin; ii++)
 	  Gal[merger_centralgal].sfh_BulgeMassRings[jj][ii] = fractionRings[jj]*Gal[merger_centralgal].sfh_BulgeMass[ii];
-#endif // STAR_FORMATION_HISTORY
+	  #endif // STAR_FORMATION_HISTORY
 	}
-#endif //RINGS_IN_BULGES
+	#endif //RINGS_IN_BULGES
 
 	mass_checks (p, "model_mergers.c", __LINE__);
 	mass_checks (merger_centralgal, "model_mergers.c", __LINE__);
@@ -374,10 +374,10 @@ void deal_with_galaxy_merger (int p, double time, double deltaT, int nstep) {
  * black hole; BlackHoleGrowth == 1 instead feeds an accretion disk: accretion occurs in main.c 					  */
 void grow_black_hole (int merger_centralgal, double mass_ratio, double deltaT) {
 	double BHaccrete, fraction;
-#ifdef H2_AND_RINGS
+	#ifdef H2_AND_RINGS
 	int    jj;
 	double fractionRings[RNUM];
-#endif
+	#endif
 
 	if (Gal[merger_centralgal].ColdGas > 0.0) {
 		BHaccrete = BlackHoleGrowthRate * mass_ratio * Gal[merger_centralgal].ColdGas
@@ -391,7 +391,7 @@ void grow_black_hole (int merger_centralgal, double mass_ratio, double deltaT) {
 		}
 		fraction  = BHaccrete / Gal[merger_centralgal].ColdGas;
 
-#ifdef H2_AND_RINGS
+		#ifdef H2_AND_RINGS
 		for ( jj = 0; jj < RNUM; jj++ )
 			fractionRings[jj] = fraction;
 		// Doesn't matter the destination, since there are no rings in BlackHoleMass or BlackHoleGas but maybe there
@@ -420,7 +420,7 @@ void grow_black_hole (int merger_centralgal, double mass_ratio, double deltaT) {
 			transfer_material_with_rings(merger_centralgal, "BlackHoleGas", merger_centralgal, "ColdGas", fractionRings,
 										 "model_mergers.c", __LINE__);
 		}
-#else // H2_AND_RINGS
+		#else // H2_AND_RINGS
 		if (BlackHoleGrowth == 0) {
 			transfer_material (merger_centralgal, "BlackHoleMass", merger_centralgal, "ColdGas", fraction,
 			                   "model_mergers.c", __LINE__);
@@ -429,7 +429,7 @@ void grow_black_hole (int merger_centralgal, double mass_ratio, double deltaT) {
 			transfer_material (merger_centralgal, "BlackHoleGas", merger_centralgal, "ColdGas", fraction,
 			                   "model_mergers.c", __LINE__);
 		}
-#endif //H2_AND_RINGS
+		#endif //H2_AND_RINGS
 
 		Gal[merger_centralgal].QuasarAccretionRate += BHaccrete / deltaT;
 	}
@@ -498,7 +498,7 @@ void add_galaxies_together (int t, int p, double deltaT) {
 		Gal[t].NMinorMergers += 1.; //
 	}
 
-#ifdef H2_AND_RINGS
+	#ifdef H2_AND_RINGS
 	double ringtot, fractionRings[RNUM], rd;
 	int    jj;
 
@@ -527,34 +527,34 @@ void add_galaxies_together (int t, int p, double deltaT) {
 		Gal[p].ColdGasRings[j]       = Gal[p].ColdGas * fractionRings[j];
 		Gal[p].MetalsColdGasRings[j] = metals_add(metals_init(), Gal[p].MetalsColdGas, fractionRings[j]);
 
-#ifdef DETAILED_METALS_AND_MASS_RETURN
-#ifdef INDIVIDUAL_ELEMENTS //All: [H][He][Cb][N][O][Ne][Mg][Si][S][Ca][Fe] or //Only [H][He][O][Mg][Fe]
+		#ifdef DETAILED_METALS_AND_MASS_RETURN
+		#ifdef INDIVIDUAL_ELEMENTS //All: [H][He][Cb][N][O][Ne][Mg][Si][S][Ca][Fe] or //Only [H][He][O][Mg][Fe]
 		int kk;
 		for ( kk = 0; kk < NUM_ELEMENTS; kk++ ) {
 			Gal[p].ColdGasRings_elements[j][kk] = Gal[p].ColdGas_elements[kk] * fractionRings[j];
 		}
-#endif // INDIVIDUAL_ELEMENTS
-#endif // DETAILED_METALS_AND_MASS_RETURN
+		#endif // INDIVIDUAL_ELEMENTS
+		#endif // DETAILED_METALS_AND_MASS_RETURN
 		fractionRings[j] = 1.;
 	}
 	transfer_material_with_rings(t, "ColdGas", p, "ColdGas", fractionRings, "model_mergers.c", __LINE__);
-#else // H2_AND_RINGS
+	#else // H2_AND_RINGS
 	transfer_material (t, "ColdGas", p, "ColdGas", 1., "model_mergers.c", __LINE__);
-#endif // H2_AND_RINGS
+	#endif // H2_AND_RINGS
 	transfer_material (t, "HotGas", p, "HotGas", 1., "model_mergers.c", __LINE__);
 	transfer_material (t, "EjectedMass", p, "EjectedMass", 1., "model_mergers.c", __LINE__);
 
 	mass_checks (p, "model_mergers.c", __LINE__);
 	mass_checks (t, "model_mergers.c", __LINE__);
 
-#ifdef TRACK_MASSGROWTH_CHANNELS
+	#ifdef TRACK_MASSGROWTH_CHANNELS
 	Gal[t].MassFromMergers += Gal[p].DiskMass + Gal[p].BulgeMass;
 	Gal[p].MassFromInSitu  = 0.;
 	Gal[p].MassFromMergers = 0.;
 	Gal[p].MassFromBursts  = 0.;
 
-#ifdef STAR_FORMATION_HISTORY
-#ifdef TRACK_SFH_MASSGROWTH_CHANNELS
+	#ifdef STAR_FORMATION_HISTORY
+	#ifdef TRACK_SFH_MASSGROWTH_CHANNELS
 	for ( ii = 0; ii <= Gal[t].sfh_ibin; ii++ ) {
 		Gal[t].sfh_MassFromMergers[ii] += Gal[t].sfh_DiskMass[ii] + Gal[t].sfh_BulgeMass[ii];
 	}
@@ -568,23 +568,23 @@ void add_galaxies_together (int t, int p, double deltaT) {
 	for ( ii             = 0; ii <= Gal[p].sfh_ibin; ii++ ) {
 		Gal[p].sfh_MassFromBursts[ii] = 0.;
 	}
-#endif // TRACK_SFH_MASSGROWTH_CHANNELS
-#endif // STAR_FORMATION_HISTORY
-#endif // TRACK_MASSGROWTH_CHANNELS
+	#endif // TRACK_SFH_MASSGROWTH_CHANNELS
+	#endif // STAR_FORMATION_HISTORY
+	#endif // TRACK_MASSGROWTH_CHANNELS
 
-#ifdef TRACK_BURST
+	#ifdef TRACK_BURST
 	// The whole burst component gets transferred.
 	transfer_material(t, "BurstMass", p, "BurstMass", 1., "model_mergers.c", __LINE__);
-#endif // TRACK_BURST
-#ifdef H2_AND_RINGS
+	#endif // TRACK_BURST
+	#ifdef H2_AND_RINGS
 	for ( j              = 0; j < RNUM; j++ ) {
 		fractionRings[j] = 1.;
 	}
-#endif // H2_AND_RINGS
+	#endif // H2_AND_RINGS
 
 	//Bulge occupies the same place as the disk it forms from, after the merger is finished the material will be
 	// distributed in a Jaffe profile
-#ifdef H2_AND_RINGS
+	#ifdef H2_AND_RINGS
 	if ( BulgeFormationInMinorMergersOn ) {
 		transfer_material_with_rings(t, "BulgeMass", p, "DiskMass", fractionRings, "model_mergers.c", __LINE__);
 	}
@@ -593,15 +593,15 @@ void add_galaxies_together (int t, int p, double deltaT) {
 	}
 
 	if ( Gal[p].BulgeMass > 0. )
-#ifdef RINGS_IN_BULGES
+	#ifdef RINGS_IN_BULGES
 		transfer_material_with_rings(t, "BulgeMass", p, "BulgeMass", fractionRings, "model_mergers.c", __LINE__);
-#else // RINGS_IN_BULGES
+		#else // RINGS_IN_BULGES
 		transfer_material(t, "BulgeMass", p, "BulgeMass", 1., "model_mergers.c", __LINE__);
-#endif // RINGS_IN_BULGES
+		#endif // RINGS_IN_BULGES
 
-#else // H2_AND_RINGS
+	#else // H2_AND_RINGS
 
-#ifdef DI_MERGERS
+	#ifdef DI_MERGERS
 	// Minor mergers
 	if (mass_ratio < ThreshMajorMerger) {
 		// on bulge-dominated galaxies
@@ -651,7 +651,7 @@ void add_galaxies_together (int t, int p, double deltaT) {
 	if (Gal[t].BulgeMass == 0.0) {
 		Gal[t].BulgeMass = 1e-10;
 	}
-#else // DI_MERGERS
+	#else // DI_MERGERS
 	if (mass_ratio > ThreshMajorMerger) {
 		// Major mergers on bulge-less galaxies. New bulge is a CB through major mergers.
 		if (Gal[t].BulgeMass == 0.0) {
@@ -675,8 +675,8 @@ void add_galaxies_together (int t, int p, double deltaT) {
 			// Minor mergers on galaxies with CB through minor mergers or PB. New bulge is a CB through minor mergers.
 		else if (Gal[t].BulgeMass > 0.0 && Gal[t].CBMassMajor == 0.0) {
 			Gal[t].CBMassMinor += Gal[t].PBMass + Gal[p].BulgeMass + Gal[p].DiskMass;
-			Gal[t].CBMass = Gal[t].BulgeMass + Gal[p].BulgeMass + Gal[p].DiskMass;
-			Gal[t].PBMass = 0.0;
+			Gal[t].CBMass      = Gal[t].BulgeMass + Gal[p].BulgeMass + Gal[p].DiskMass;
+			Gal[t].PBMass      = 0.0;
 		}
 			// Minor mergers on galaxies with CB through major mergers. New bulge is a CB through major mergers plus a CB through minor mergers.
 		else if (Gal[t].CBMassMajor > 0.0) {
@@ -693,8 +693,8 @@ void add_galaxies_together (int t, int p, double deltaT) {
 			transfer_material (t, "BulgeMass", p, "BulgeMass", 1., "model_mergers.c", __LINE__);
 		}
 	}
-#endif // DI_MERGERS
-#endif // H2_AND_RINGS
+	#endif // DI_MERGERS
+	#endif // H2_AND_RINGS
 
 	transfer_material (t, "ICM", p, "ICM", 1., "model_mergers.c", __LINE__);
 
@@ -719,7 +719,7 @@ void add_galaxies_together (int t, int p, double deltaT) {
 	}
 
 	// Bulge spin
-#ifdef DI_BULGESPIN
+	#ifdef DI_BULGESPIN
 
 	if ( BulgeFormationInMinorMergersOn )
 		ptrans = pdisk + pbulge;
@@ -733,7 +733,7 @@ void add_galaxies_together (int t, int p, double deltaT) {
 			Gal[t].BulgeSpin[j] = tspin[j] / Gal[t].BulgeMass;
 		}
 	}
-#endif // DI_BULGESPIN
+	#endif // DI_BULGESPIN
 
 	Gal[t].Sfr += Gal[p].Sfr;
 	if (BulgeFormationInMinorMergersOn) {
@@ -772,30 +772,30 @@ void add_galaxies_together (int t, int p, double deltaT) {
 /** @brief In a major merger, both disks are destroyed and all the mass transferred to the bulge. The galaxies have
  * already been merged, so all we need to do here is transfer stars from disk to bulge of the central galaxy. 		  */
 void make_bulge_from_burst (int p) {
-#ifdef DI_BULGESPIN
+	#ifdef DI_BULGESPIN
 	int   j;
 	float pbulge, pdisk, pspin[3];
 	
 	// Record masses before mass transfer
 	pbulge = Gal[p].BulgeMass;
 	pdisk  = Gal[p].DiskMass;
-#endif // DI_BULGESPIN
+	#endif // DI_BULGESPIN
 
-#ifdef H2_AND_RINGS
+	#ifdef H2_AND_RINGS
 	int    jj;
 	double fractionRings[RNUM];
 	for (jj       = 0; jj < RNUM; jj ++) {
 		fractionRings[jj] = 1.;
 	}
 	transfer_material_with_rings (p, "BulgeMass", p, "DiskMass", fractionRings, "model_mergers.c", __LINE__);
-#else // H2_AND_RINGS
+	#else // H2_AND_RINGS
 	Gal[p].CBMassMajor += Gal[p].DiskMass;
 	Gal[p].CBMass = Gal[p].CBMassMajor;
 	transfer_material (p, "BulgeMass", p, "DiskMass", 1., "model_mergers.c", __LINE__);
-#endif // H2_AND_RINGS
+	#endif // H2_AND_RINGS
 	mass_checks (p, "model_mergers.c", __LINE__);
 
-#ifdef DI_BULGESPIN
+	#ifdef DI_BULGESPIN
 	// Momentum conservation: As all the disk is moved to the bulge, we must assume that it carries its angular
 	// momentum with it.
 	for ( j = 0; j < 3; j ++ ) {
@@ -806,13 +806,13 @@ void make_bulge_from_burst (int p) {
 			Gal[p].BulgeSpin[j] = pspin[j] / Gal[p].BulgeMass;
 		}
 	}
-#endif // DI_BULGESPIN
+	#endif // DI_BULGESPIN
 
 	// Update the star formation rate.
 	Gal[p].SfrBulge = Gal[p].Sfr;
-#ifdef H2_AND_RINGS
+	#ifdef H2_AND_RINGS
 	for(jj=0;jj<RNUM;jj++) Gal[p].SfrRings[jj]=0;
-#endif
+	#endif
 }
 // end make_bulge_from_burst
 
@@ -842,15 +842,15 @@ void make_bulge_from_burst (int p) {
 double
 collisional_starburst_recipe (double mass_ratio, int merger_centralgal, int centralgal, double time, double deltaT) {
 	double mstars, eburst, Ggas;
-#ifdef COMPUTE_SPECPHOT_PROPERTIES
-#ifndef POST_PROCESS_MAGS
+	#ifdef COMPUTE_SPECPHOT_PROPERTIES
+	#ifndef POST_PROCESS_MAGS
 	double metallicitySF;
-#endif // POST_PROCESS_MAGS
-#endif // COMPUTE_SPECPHOT_PROPERTIES
-#ifdef H2_AND_RINGS
+	#endif // POST_PROCESS_MAGS
+	#endif // COMPUTE_SPECPHOT_PROPERTIES
+	#ifdef H2_AND_RINGS
 	double mstarsRings[RNUM];
 	int    j;
-#endif // H2_AND_RINGS
+	#endif // H2_AND_RINGS
 
 	Ggas = Gal[merger_centralgal].ColdGas;
 
@@ -861,94 +861,94 @@ collisional_starburst_recipe (double mass_ratio, int merger_centralgal, int cent
 	if (mstars < 0.0) {
 		mstars = 0.0;
 	}
-#ifdef H2_AND_RINGS
+	#ifdef H2_AND_RINGS
 	for ( j    = 0; j < RNUM; j++ ) {
 		mstarsRings[j] = eburst * Gal[merger_centralgal].ColdGasRings[j];
 		if ( mstarsRings[j] < 0.0 ) {
 			mstarsRings[j] = 0.0;
 		}
 	}
-#endif // H2_AND_RINGS
+	#endif // H2_AND_RINGS
 
 	// Otherwise there is another check inside SN_feedback.
-#ifdef FEEDBACK_COUPLED_WITH_MASS_RETURN
+	#ifdef FEEDBACK_COUPLED_WITH_MASS_RETURN
 	if ( mstars > Gal[merger_centralgal].ColdGas ) {
 		mstars = Gal[merger_centralgal].ColdGas;
 	}
-#ifdef H2_AND_RINGS
+	#ifdef H2_AND_RINGS
 	for ( j    = 0; j < RNUM; j++ ) {
 		if ( mstarsRings[j] > Gal[merger_centralgal].ColdGasRings[j] ) {
 			mstarsRings[j] = Gal[merger_centralgal].ColdGasRings[j];
 		}
 	}
-#endif // H2_AND_RINGS
-#endif // FEEDBACK_COUPLED_WITH_MASS_RETURN
+	#endif // H2_AND_RINGS
+	#endif // FEEDBACK_COUPLED_WITH_MASS_RETURN
 
 	// Store the value of the metallicity of the cold phase when SF occurs. Used to update luminosities below.
-#ifdef COMPUTE_SPECPHOT_PROPERTIES
-#ifndef POST_PROCESS_MAGS
+	#ifdef COMPUTE_SPECPHOT_PROPERTIES
+	#ifndef POST_PROCESS_MAGS
 	metallicitySF = metals_total(Gal[merger_centralgal].MetalsColdGas) / Gal[merger_centralgal].ColdGas;
-#endif // POST_PROCESS_MAGS
-#endif // COMPUTE_SPECPHOT_PROPERTIES
+	#endif // POST_PROCESS_MAGS
+	#endif // COMPUTE_SPECPHOT_PROPERTIES
 
 	// If FEEDBACK_COUPLED_WITH_MASS_RETURN feedback happens only when stars die, there is no need to balance it with SF
-#ifndef FEEDBACK_COUPLED_WITH_MASS_RETURN
+	#ifndef FEEDBACK_COUPLED_WITH_MASS_RETURN
 	if (mstars > 0.)
-#ifndef H2_AND_RINGS
+		#ifndef H2_AND_RINGS
 	{
 		update_stars_due_to_reheat (merger_centralgal, centralgal, &mstars);
 	}
-#else // H2_AND_RINGS
+	#else // H2_AND_RINGS
 	update_stars_due_to_reheat(merger_centralgal, centralgal, &mstars, mstarsRings);
-#endif // H2_AND_RINGS
-#endif //FEEDBACK_COUPLED_WITH_MASS_RETURN
+	#endif // H2_AND_RINGS
+	#endif //FEEDBACK_COUPLED_WITH_MASS_RETURN
 
 	// Update the star formation rate
 	Gal[merger_centralgal].Sfr += mstars / deltaT;
-#ifdef H2_AND_RINGS
+	#ifdef H2_AND_RINGS
 	for ( j = 0; j < RNUM; j++ ) {
 		Gal[merger_centralgal].SfrRings[j] += mstarsRings[j] / deltaT;
 	}
-#endif // H2_AND_RINGS
+	#endif // H2_AND_RINGS
 	mass_checks (merger_centralgal, "model_mergers.c", __LINE__);
 
 	// Update_from_star_formation can only be called after SN_feeedback recipe since stars need to be re_set once the
 	// reheated mass is known (star formation and feedback share the same fraction of cold gas).
 	int nstep = - 1;
-#ifndef H2_AND_RINGS
+	#ifndef H2_AND_RINGS
 	if (mstars > 0.) {
 		update_from_star_formation (merger_centralgal, mstars, "merger", nstep);
 	}
-#else // H2_AND_RINGS
+	#else // H2_AND_RINGS
 	if ( mstars > 0. ) {
 		update_from_star_formation(merger_centralgal, mstars, mstarsRings, "merger", nstep);
 	}
-#endif // H2_AND_RINGS
+	#endif // H2_AND_RINGS
 
 	mass_checks (merger_centralgal, "model_mergers.c", __LINE__);
 
 	update_massweightage (merger_centralgal, mstars, time);
 
-#ifndef FEEDBACK_COUPLED_WITH_MASS_RETURN
-#ifndef H2_AND_RINGS
+	#ifndef FEEDBACK_COUPLED_WITH_MASS_RETURN
+	#ifndef H2_AND_RINGS
 	if (mstars > 0.) {
 		SN_feedback (merger_centralgal, centralgal, mstars, "ColdGas");
 	}
-#else // H2_AND_RINGS
+	#else // H2_AND_RINGS
 	if ( mstars > 0. ) {
 		SN_feedback(merger_centralgal, centralgal, mstars, mstarsRings, "ColdGas");
 	}
-#endif // H2_AND_RINGS
-#endif // FEEDBACK_COUPLED_WITH_MASS_RETURN
+	#endif // H2_AND_RINGS
+	#endif // FEEDBACK_COUPLED_WITH_MASS_RETURN
 
 	// Update the luminosities due to the stars formed.
-#ifdef COMPUTE_SPECPHOT_PROPERTIES
-#ifndef POST_PROCESS_MAGS
+	#ifdef COMPUTE_SPECPHOT_PROPERTIES
+	#ifndef POST_PROCESS_MAGS
 	if ( mstars > 0.0 ) {
 		add_to_luminosities(merger_centralgal, mstars, time, deltaT / STEPS, metallicitySF);
 	}
-#endif // POST_PROCESS_MAGS
-#endif // COMPUTE_SPECPHOT_PROPERTIES
+	#endif // POST_PROCESS_MAGS
+	#endif // COMPUTE_SPECPHOT_PROPERTIES
 
 	if (Ggas > 0.) {
 		return mstars / Ggas;

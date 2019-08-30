@@ -56,6 +56,7 @@
 
 #define  MAXGALFAC 2.3 /*1.5/2.3 - maximum fraction of satellite without a halo (for memory allocation)*/
 
+
 #ifdef FAST_TESTING_MODE
 #define  STEPS 15
 #else
@@ -69,7 +70,7 @@
 #define LENSIGMAH 101  /*H2 fraction table from Krumholz et al. 2009*/
 #define LENZ 13
 #endif
-
+				
 #define  ALLOCPARAMETER 50.  /* new definition !!! THIS HAS TO BE 50 !!! DONT EVER EVER EVER CHANGE !!! */
 
 #ifdef STAR_FORMATION_HISTORY

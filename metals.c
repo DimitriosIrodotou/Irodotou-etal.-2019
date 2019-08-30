@@ -85,23 +85,27 @@ double metals_total(struct metals m)
 
 // The following mimics the original code with a single metallicity
 
-double metals_add (double m1,
-                   double m2,
-                   double fraction) {
-	return (m1 + fraction * m2);
+double metals_add(double m1,
+		 double m2,
+		 double fraction)
+{
+  return(m1+fraction*m2);
 }
 
-double metals_init () {
-	return (0.);
+double metals_init()
+{
+  return(0.);
 }
 
-void metals_print (char s[], double m) {
-	printf ("%s=%f\n", s, m);
-	return;
+void metals_print(char s[],double m)
+{
+  printf("%s=%f\n",s,m);
+  return;
 }
 
-double metals_total (double m) {
-	return (m);
+double metals_total(double m)
+{
+  return(m);
 }
 
 #endif

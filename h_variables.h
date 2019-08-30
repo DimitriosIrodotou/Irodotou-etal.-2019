@@ -3,18 +3,18 @@
 
 // I have no idea why the following variable is not declared extern,
 // but compilation breaks if you do so.
-char          *inputFile; // Name of the input file
+char *inputFile; // Name of the input file
 extern double MinGalOutputMass;
 
-extern int FirstFile;        /* first and last file for processing */
+extern int FirstFile;		/* first and last file for processing */
 extern int LastFile;
 
-extern int    Ntrees;        /* number of trees in current file */
+extern int Ntrees;		/* number of trees in current file */
 extern double AllocValue_MaxHaloGal;
 extern double AllocValue_MaxGal;
 extern double AllocValue_MaxGalTree;
 
-extern int MaxGal;        /* Maximum number of galaxies allowed for Gal[] array */
+extern int MaxGal;		/* Maximum number of galaxies allowed for Gal[] array */
 extern int NHaloGal, MaxHaloGal;
 extern int NGalTree, MaxGalTree;
 extern int *HaloGalHeap;
@@ -27,6 +27,7 @@ extern int LastDarkMatterSnapShot;
 extern int LastDarkMatterSnapShot_MR;
 extern int LastDarkMatterSnapShot_MRII;
 #endif
+
 
 extern char SpecPhotDir[512];
 extern char PhotPrefix[50];
@@ -67,12 +68,13 @@ extern int TotHalos;
 extern int TotGalaxies[NOUT];
 extern int *TreeNgals[NOUT];
 
-extern int*FirstHaloInSnap;
+extern int *FirstHaloInSnap;
 
-extern int*TreeNHalos;
-extern int*TreeFirstHalo;
+extern int *TreeNHalos;
+extern int *TreeFirstHalo;
 
-extern void*TreeAuxData;
+extern void *TreeAuxData;
+
 
 extern double MaxMemSize;
 
@@ -114,6 +116,7 @@ extern double BoxSize_MRII;
 extern double PartMass_OriginalCosm_MRII;
 extern double BoxSize_OriginalCosm_MRII;
 #endif
+
 
 /* flags */
 extern int StarFormationModel;
@@ -191,22 +194,22 @@ extern double RingRadius[RNUM];
 #endif
 
 extern double
-		UnitLength_in_cm,
-		UnitTime_in_s,
-		UnitVelocity_in_cm_per_s,
-		UnitMass_in_g,
-		RhoCrit,
-		UnitPressure_in_cgs,
-		UnitDensity_in_cgs,
-		UnitCoolingRate_in_cgs,
-		UnitEnergy_in_cgs,
-		UnitTime_in_Megayears, //Using time as stored in the code, this gives Myr/h
-		UnitTime_in_years,
-		G,
-		Hubble,
-		a0, ar;
+	UnitLength_in_cm,
+	UnitTime_in_s,
+	UnitVelocity_in_cm_per_s,
+	UnitMass_in_g,
+	RhoCrit,
+	UnitPressure_in_cgs,
+	UnitDensity_in_cgs,
+	UnitCoolingRate_in_cgs,
+	UnitEnergy_in_cgs,
+	UnitTime_in_Megayears, //Using time as stored in the code, this gives Myr/h
+	UnitTime_in_years,
+	G,
+	Hubble,
+	a0, ar;
 
-extern int   ListOutputSnaps[NOUT];
+extern int ListOutputSnaps[NOUT];
 extern float ListOutputRedshifts[NOUT];
 
 extern double ZZ[MAXSNAPS];
@@ -216,11 +219,12 @@ extern double AA_OriginalCosm[MAXSNAPS];
 
 extern double Age[MAXSNAPS];
 
-extern int Zlistlen;
+extern int    Zlistlen;
 
-extern gsl_rng*random_generator;
+extern gsl_rng *random_generator;
 
-extern int NumMergers;
+
+extern int    NumMergers;
 
 
 /*  tabulated stuff */
@@ -340,34 +344,34 @@ float AGBRate2[STEPS*MAXSNAPS][LIFETIME_Z_NUM];
 #ifdef BIMODALDTD
 	//#define DTD_NORM 0.903206 //(26Myrs - 21Gyrs)
 	//#define DTD_NORM 0.896668 //For P98 Z=0.02 lifetimes (35Myrs - 17Gyrs)
-#define DTD_NORM 0.900348 //(35Myrs - 21Gyrs)
+	#define DTD_NORM 0.900348 //(35Myrs - 21Gyrs)
 #endif
 #ifdef CUSTOMDTD
 	//#define DTD_NORM 0.524836 //(26Myrs - 21Gyrs)
 	//#define DTD_NORM 0.606746 //For P98 Z=0.02 lifetimes (35Myrs - 17Gyrs, for ~32% in prompt component)
-#define DTD_NORM 0.610431 //(35Myrs - 21Gyrs, for ~32% in prompt component)
+	#define DTD_NORM 0.610431 //(35Myrs - 21Gyrs, for ~32% in prompt component)
 #endif
 #ifdef GAUSSIANDTD
-#define DTD_NORM = 1.0 //For P98 Z=0.02 lifetimes (35Myrs - 17Gyrs) and (35Myrs - 21Gyrs)
-#define TAUCHARAC 1.0 //Characteristic delay time for SNe-Ia (i.e. peak of Gaussian distribution) in Gyrs //default: 2.0
-#define SIGMA_TD 0.2*TAUCHARAC //0.2 for narrow-DTD, 0.5 for wide_DTD
+	#define DTD_NORM = 1.0 //For P98 Z=0.02 lifetimes (35Myrs - 17Gyrs) and (35Myrs - 21Gyrs)
+	#define TAUCHARAC 1.0 //Characteristic delay time for SNe-Ia (i.e. peak of Gaussian distribution) in Gyrs //default: 2.0
+	#define SIGMA_TD 0.2*TAUCHARAC //0.2 for narrow-DTD, 0.5 for wide_DTD
 #endif
 #ifdef POWERLAWDTD
 	//#define DTD_NORM 7.21863 // (26Myrs - 21Gyrs)
-#define DTD_NORM 6.72574 //6.72544 // (35Myrs - 21Gyrs)
+	#define DTD_NORM 6.72574 //6.72544 // (35Myrs - 21Gyrs)
 	//#define DTD_NORM 6.56087 //For P98 Z=0.02 lifetimes (35Myrs - 17Gyrs)
 	//#define DTD_NORM 6.22432 // (35Myrs - 11Gyrs)
 	//#define DTD_NORM 6.02197 // (50Myrs - 17Gyrs)
 	//#define DTD_NORM 6.35503 // (40Myrs - 17Gyrs)
-#define DTD_SLOPE -1.12 //Slope of power law, according to Maoz et al. (2012)
+	#define DTD_SLOPE -1.12 //Slope of power law, according to Maoz et al. (2012)
 #endif
 #ifdef RUITERDTD
 	//#define DTD_NORM 1.09545 //(26Myrs - 21Gyrs)
-#define DTD_NORM 1.09545 //(35Myrs - 21Gyrs)
+	#define DTD_NORM 1.09545 //(35Myrs - 21Gyrs)
 	//#define DTD_NORM 1.08422 //For P98 Z=0.02 lifetimes (35Myrs - 17Gyrs)
-#define TAUCHARAC 0.5 //Peak of Gaussian (prompt) component [in Gyrs]
-#define SIGMA_TD 0.2*TAUCHARAC //Width of Gaussian (prompt) component
-#define DTD_SLOPE -2.0 //Slope of power law (delayed) component (see Ruiter et al. 2012)
+	#define TAUCHARAC 0.5 //Peak of Gaussian (prompt) component [in Gyrs]
+	#define SIGMA_TD 0.2*TAUCHARAC //Width of Gaussian (prompt) component
+	#define DTD_SLOPE -2.0 //Slope of power law (delayed) component (see Ruiter et al. 2012)
 #endif
 #endif
 
@@ -438,9 +442,10 @@ extern long long *IdList;
 extern float *PosList, *VelList;
 #endif
 
-extern int    Hashbits;
-extern int    NumWrittenInParallel;
-extern double ScaleFactor;    // factor by which to multiply a position to get its ph index (after floring)
+
+extern int Hashbits;
+extern int NumWrittenInParallel;
+extern double ScaleFactor;	// factor by which to multiply a position to get its ph index (after floring)
 
 
 #ifdef USE_MEMORY_TO_MINIMIZE_IO
@@ -453,14 +458,14 @@ extern size_t offset_galsnapdata[NOUT], maxstorage_galsnapdata[NOUT], filled_gal
 extern float Rho[RHO_LEN];
 extern float H2[RHO_LEN][Z_LEN];
 
-extern float Reion_z[46], Reion_Mc[46];
+extern float Reion_z[46],Reion_Mc[46];
 
-extern FILE*tree_file;
-extern FILE*treeaux_file;
-extern FILE*treedbids_file;
-extern FILE*FdGalTree;
-extern FILE*FdGalTreeSFH;
-extern FILE*FdGalDumps[NOUT];
+extern FILE *tree_file;
+extern FILE *treeaux_file;
+extern FILE *treedbids_file;
+extern FILE *FdGalTree;
+extern FILE *FdGalTreeSFH;
+extern FILE *FdGalDumps[NOUT];
 
 /*H2 fraction table*/
 #ifdef H2_AND_RINGS

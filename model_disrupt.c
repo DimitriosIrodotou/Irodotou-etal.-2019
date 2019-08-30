@@ -48,52 +48,52 @@
  *  */
 
 
-void disrupt (int p, int centralgal) {
+void disrupt( int p, int centralgal ) {
 	double rho_sat, rho_cen;
 	double cen_mass, r_sat, radius;
-#ifdef H2_AND_RINGS
+	#ifdef H2_AND_RINGS
 	int jj;
 	double fractionRings[RNUM];
-#endif
+	#endif
 	/* If the main halo density at the pericentre (closest point in the orbit
 	 * to the central galaxy)is larger than the satellite's density at the
 	 * half mass radius, the satellite is completely disrupted. Note that since
 	 * the satellite is a type 2 the only mass components remaining and
 	 * contributing to the density are the cold gas and stellar mass. */
-
+	
 	//TODO If we are passing in centralgal then we should not set it here
 	centralgal = Gal[p].CentralGal;
-
-	mass_checks (centralgal, "model_disrupt.c", __LINE__);
-	mass_checks (p, "model_disrupt.c", __LINE__);
-
+	
+	mass_checks(centralgal, "model_disrupt.c", __LINE__);
+	mass_checks(p, "model_disrupt.c", __LINE__);
+	
 	/* Radius calculated at the peri-point */
-	radius = peri_radius (p, centralgal);
-	if (radius < 0) {
+	radius = peri_radius(p, centralgal);
+	if ( radius < 0 ) {
 		terminate("must be wrong \n");
 	}
-
+	
 	/* Calculate the density of the main central halo at radius (the peri-centre).
 	 * The tidal forces are caused by the dark matter of the main halo, hence Mvir
 	 * is used. Assume isothermal. */
 	cen_mass = Gal[centralgal].Mvir * radius / Gal[centralgal].Rvir;
 	rho_cen  = cen_mass / pow3(radius);
-
-	if (Gal[p].DiskMass + Gal[p].BulgeMass > 0) {
+	
+	if ( Gal[p].DiskMass + Gal[p].BulgeMass > 0 ) {
 		// Calculate the rho according to the real geometry using all the baryonic material (ColdGas+DiskMass+BulgeMass)
 		int do_ColdGas = 1, do_DiskMass = 1, do_BulgeMass = 1;
 		rho_sat = (Gal[p].DiskMass + Gal[p].BulgeMass + Gal[p].ColdGas) /
-		          pow3(half_mass_radius (p, do_ColdGas, do_DiskMass, do_BulgeMass));
-	} else {
-		rho_sat = 0.0;
+		          pow3(half_mass_radius(p, do_ColdGas, do_DiskMass, do_BulgeMass));
 	}
-
+	else
+		rho_sat = 0.0;
+	
 	/* If density of the main halo is larger than that of the satellite baryonic
 	 * component, complete and instantaneous disruption is assumed. Galaxy becomes
 	 * a type 3 and all its material is transferred to the central galaxy. */
-	if (rho_cen > rho_sat) {
+	if ( rho_cen > rho_sat ) {
 		Gal[p].Type = 3;
-#ifdef GALAXYTREE
+		#ifdef GALAXYTREE
 		int q;
 		q = Gal[Gal[p].CentralGal].FirstProgGal;
 		if (q >= 0)
@@ -127,70 +127,70 @@ void disrupt (int p, int centralgal) {
 			terminate("inconsistency");
 	
 		HaloGal[GalTree[q].HaloGalIndex].DisruptOn = 1;
-#endif
+		#endif
 		/* Put gas component to the central galaxy hot gas and stellar material into the ICM.
 		 * Note that the satellite should have no extended components. */
 		// TODO Shouldn't the stars end up in the bulge? - this is a close merger
-
+		
 		//if BlackHoleDisruptGrowthRate>0 some disrupted mass goes into the black hole
 		Gal[centralgal].BlackHoleMass += BlackHoleDisruptGrowthRate * Gal[p].ColdGas;
 		Gal[p].ColdGas -= BlackHoleDisruptGrowthRate * Gal[p].ColdGas;
-
-#ifdef TRACK_MASSGROWTH_CHANNELS
+		
+		#ifdef TRACK_MASSGROWTH_CHANNELS
 		Gal[p].MassFromInSitu = 0.;
 		Gal[p].MassFromMergers = 0.;
 		Gal[p].MassFromBursts = 0.;
-#ifdef STAR_FORMATION_HISTORY
-#ifdef TRACK_SFH_MASSGROWTH_CHANNELS
+		#ifdef STAR_FORMATION_HISTORY
+		#ifdef TRACK_SFH_MASSGROWTH_CHANNELS
 		int ii;
 		for (ii=0; ii<=Gal[p].sfh_ibin; ii++) Gal[p].sfh_MassFromInSitu[ii] = 0.;
 		for (ii=0; ii<=Gal[p].sfh_ibin; ii++) Gal[p].sfh_MassFromMergers[ii] = 0.;
 		for (ii=0; ii<=Gal[p].sfh_ibin; ii++) Gal[p].sfh_MassFromBursts[ii] = 0.;
-#endif
-#endif
-#endif
-
-#ifdef TRACK_BURST
+		#endif
+		#endif
+		#endif
+		
+		#ifdef TRACK_BURST
 		/* Transfer burst component first */
 		//transfer_material(centralgal,"BurstMass",p,"BurstMass",
 		//	   (Gal[p].DiskMass+Gal[p].BulgeMass)/(Gal[p].DiskMass+Gal[p].BulgeMass+Gal[p].ICM),"disrupt.c", __LINE__);
-#endif
-
-#ifdef H2_AND_RINGS
+		#endif
+		
+		#ifdef H2_AND_RINGS
 		for (jj=0;jj<RNUM;jj++)
 		  fractionRings[jj]=1.;
 		transfer_material_with_rings(centralgal,"ICM",p,"DiskMass",fractionRings,"disrupt.c", __LINE__);
-#ifdef RINGS_IN_BULGES
+		#ifdef RINGS_IN_BULGES
 		transfer_material_with_rings(centralgal,"ICM",p,"BulgeMass",fractionRings,"disrupt.c", __LINE__);
-#else
+		#else
 		transfer_material(centralgal,"ICM",p,"BulgeMass",1.,"disrupt.c", __LINE__);
-#endif
-#else
-		transfer_material (centralgal, "ICM", p, "BulgeMass", 1., "disrupt.c", __LINE__);
-		transfer_material (centralgal, "ICM", p, "DiskMass", 1., "disrupt.c", __LINE__);
-#endif
-
-#ifdef H2_AND_RINGS
+		#endif
+		#else
+		transfer_material(centralgal, "ICM", p, "BulgeMass", 1., "disrupt.c", __LINE__);
+		transfer_material(centralgal, "ICM", p, "DiskMass", 1., "disrupt.c", __LINE__);
+		#endif
+		
+		#ifdef H2_AND_RINGS
 		transfer_material_with_rings(centralgal,"HotGas",p,"ColdGas",fractionRings,"disrupt.c", __LINE__);
-#else
-		transfer_material (centralgal, "HotGas", p, "ColdGas", 1., "disrupt.c", __LINE__);
-#endif
-		transfer_material (centralgal, "HotGas", p, "HotGas", 1., "disrupt.c", __LINE__);
+		#else
+		transfer_material(centralgal, "HotGas", p, "ColdGas", 1., "disrupt.c", __LINE__);
+		#endif
+		transfer_material(centralgal, "HotGas", p, "HotGas", 1., "disrupt.c", __LINE__);
 		//transfer_material(centralgal,"ReheatedGas",p,"ReheatedGas",1.,"disrupt.c", __LINE__);
-
+		
 	} //if (rho_cen > rho_sat)
-	mass_checks (centralgal, "model_disrupt.c", __LINE__);
-	mass_checks (p, "model_disrupt.c", __LINE__);
-
+	mass_checks(centralgal, "model_disrupt.c", __LINE__);
+	mass_checks(p, "model_disrupt.c", __LINE__);
+	
 }
 
 /** @brief Calculates the distance of the satellite to the pericentre of the
   *        main dark matter halo. */
 
-double peri_radius (int p, int centralgal) {
+double peri_radius( int p, int centralgal ) {
 	int    i;
 	double a, b, v[3], r[3], x, x0;
-	for (i = 0; i < 3; i ++) {
+	for ( i = 0; i < 3; i ++ ) {
 		r[i] = wrap(Gal[p].Pos[i] - Gal[centralgal].Pos[i], BoxSize);
 		r[i] /= (1 + ZZ[Halo[Gal[centralgal].HaloNr].SnapNum]);
 		v[i] = Gal[p].Vel[i] - Gal[centralgal].Vel[i];
@@ -198,24 +198,24 @@ double peri_radius (int p, int centralgal) {
 		//r[i] /= (1 + ZZ[Halo[Gal[centralgal].HaloNr].SnapNum]);
 		//v[i] = Gal[p].Vel_notupdated[i] - Gal[centralgal].Vel[i];
 	}
-
+	
 	b = 1 / 2. * (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]) / pow2(Gal[centralgal].Vvir);
 	a =
 			1 / 2. * (v[0] * v[0] + v[1] * v[1] + v[2] * v[2] -
 			          pow2(r[0] * v[0] + r[1] * v[1] + r[2] * v[2])
 			          / (r[0] * r[0] + r[1] * r[1] + r[2] * r[2])) / pow2(Gal[centralgal].Vvir);
-
-	x  = sqrt (b / a);
+	
+	x  = sqrt(b / a);
 	x0 = 1000;
-	while (fabs (x0 - x) >= 1.e-8) {
+	while ( fabs(x0 - x) >= 1.e-8 ) {
 		x0 = x;
-		x  = sqrt ((log (x0) + b) / a);
+		x  = sqrt((log(x0) + b) / a);
 	}
-	if (x == 0) {
+	if ( x == 0 ) {
 		terminate("wrong in peri_radius \n");
 	}
-
-	return sqrt (r[0] * r[0] + r[1] * r[1] + r[2] * r[2]) / x;
+	
+	return sqrt(r[0] * r[0] + r[1] * r[1] + r[2] * r[2]) / x;
 }
 
 
