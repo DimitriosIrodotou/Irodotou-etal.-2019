@@ -3,9 +3,10 @@ DiskMass = np.load(SavePath + 'DiskMass.npy')
 BulgeMass = np.load(SavePath + 'BulgeMass.npy')
 StellarMass = np.load(SavePath + 'StellarMass.npy')
 
-DiskMassHWT15 = np.load(SavePath + 'HWT15/' + 'DiskMass.npy')
-BulgeMassHWT15 = np.load(SavePath + 'HWT15/' + 'BulgeMass.npy')
-StellarMassHWT15 = np.load(SavePath + 'HWT15/' + 'StellarMass.npy')
+SavePath = '/Volumes/BAM-BLACK/output/output_ITH_Off/58/'
+DiskMassHWT15 = np.load(SavePath + 'DiskMass.npy')
+BulgeMassHWT15 = np.load(SavePath + 'BulgeMass.npy')
+StellarMassHWT15 = np.load(SavePath + 'StellarMass.npy')
 
 # Put into observer units and add scatter to stellar mass estimate #
 offset = 10 + np.log10(hubble)
@@ -35,16 +36,16 @@ ax2.set_xlim(7.8, 11.9)
 ax1.set_ylim(-0.1, 1.1)
 ax2.set_ylim(-0.1, 1.1)
 
-ax1.set_ylabel(r'$\mathrm{Fraction}$')
-ax2.set_ylabel(r'$\mathrm{Fraction}$')
-ax1.set_xlabel(r'$\mathrm{log_{10}(M_{\bigstar} / h^{-2}M_\odot)}$')
-ax2.set_xlabel(r'$\mathrm{log_{10}(M_{\bigstar} / h^{-2}M_\odot)}$')
+ax1.set_ylabel(r'$\mathrm{Fraction}$', size=22)
+ax2.set_ylabel(r'$\mathrm{Fraction}$', size=22)
+ax1.set_xlabel(r'$\mathrm{log_{10}(M_{\bigstar} / h^{-2}M_\odot)}$', size=22)
+ax2.set_xlabel(r'$\mathrm{log_{10}(M_{\bigstar} / h^{-2}M_\odot)}$', size=22)
 
 ax2.yaxis.set_label_position("right")
 
 ax2.yaxis.tick_right()
-ax1.tick_params(direction='in', which='both', top='on', right='on')
-ax2.tick_params(direction='in', which='both', top='on', left='on')
+ax1.tick_params(direction='in', which='both', top='on', right='on', labelsize=22)
+ax2.tick_params(direction='in', which='both', top='on', left='on', labelsize=22)
 
 ######################################################################################################################################################
 
@@ -60,13 +61,16 @@ ySd = [0.31, 0.11, 0.02, 0.00, 0.00, 0.00]
 
 # Plot observational data from C06 and ﻿KDR14 #
 obsMass = obsBulge[:, 0] + 2 * np.log10(obsHubble)
-ax1.errorbar(obsMass, obsBulge[:, 1], yerr=obsBulge[:, 2], marker='o', color='red', linestyle='None', elinewidth=1, capsize=3, capthick=1)
+ax1.errorbar(obsMass, obsBulge[:, 1], yerr=obsBulge[:, 2], marker='o', color='red', linestyle='None', elinewidth=1,
+             capsize=3, capthick=1)
 
 obsMass = obsDisk[:, 0] + 2 * np.log10(obsHubble)
-ax1.errorbar(obsMass, obsDisk[:, 1], yerr=obsDisk[:, 2], marker='o', color='green', linestyle='None', elinewidth=1, capsize=3, capthick=1)
+ax1.errorbar(obsMass, obsDisk[:, 1], yerr=obsDisk[:, 2], marker='o', color='green', linestyle='None', elinewidth=1,
+             capsize=3, capthick=1)
 
 obsMass = obsIrr[:, 0] + 2 * np.log10(obsHubble)
-ax1.errorbar(obsMass, obsIrr[:, 1], yerr=obsIrr[:, 2], marker='o', color='blue', linestyle='None', elinewidth=1, capsize=3, capthick=1)
+ax1.errorbar(obsMass, obsIrr[:, 1], yerr=obsIrr[:, 2], marker='o', color='blue', linestyle='None', elinewidth=1,
+             capsize=3, capthick=1)
 
 ax1.errorbar(x, yE, xerr=0.1, color='red', marker='s', linestyle='None', elinewidth=1, capsize=3, capthick=1)
 ax1.errorbar(x, yS0Scd, xerr=0.1, color='green', marker='s', linestyle='None', elinewidth=1, capsize=3, capthick=1)
@@ -122,9 +126,11 @@ for iBin in range(nBin):
     allBin = len(indThisBin)
 
     # Bulges
-    yBulge[iBin] = len(np.where((log10BulgeHWT15[indThisBin] - log10StellarMassHWT15[indThisBin]) > logRatio1)[0]) / float(allBin)
+    yBulge[iBin] = len(
+        np.where((log10BulgeHWT15[indThisBin] - log10StellarMassHWT15[indThisBin]) > logRatio1)[0]) / float(allBin)
     # Disks
-    yIrr[iBin] = len(np.where((log10BulgeHWT15[indThisBin] - log10StellarMassHWT15[indThisBin]) < logRatio2)[0]) / float(allBin)
+    yIrr[iBin] = len(
+        np.where((log10BulgeHWT15[indThisBin] - log10StellarMassHWT15[indThisBin]) < logRatio2)[0]) / float(allBin)
     # Intermediates
     yDisk[iBin] = 1. - yBulge[iBin] - yIrr[iBin]
 
@@ -179,9 +185,11 @@ for iBin in range(nBin):
     allBin = len(indThisBin)
 
     # Bulges
-    yBulge[iBin] = len(np.where((log10BulgeHWT15[indThisBin] - log10StellarMassHWT15[indThisBin]) > logRatio1)[0]) / float(allBin)
+    yBulge[iBin] = len(
+        np.where((log10BulgeHWT15[indThisBin] - log10StellarMassHWT15[indThisBin]) > logRatio1)[0]) / float(allBin)
     # Disks
-    yIrr[iBin] = len(np.where((log10BulgeHWT15[indThisBin] - log10StellarMassHWT15[indThisBin]) < logRatio2)[0]) / float(allBin)
+    yIrr[iBin] = len(
+        np.where((log10BulgeHWT15[indThisBin] - log10StellarMassHWT15[indThisBin]) < logRatio2)[0]) / float(allBin)
     # Intermediates
     yDisk[iBin] = 1. - yBulge[iBin] - yIrr[iBin]
 
@@ -202,7 +210,8 @@ class AnyObjectHandler(HandlerBase):
         return [l1, l2, l3]
 
 
-legend1 = ax1.legend([object], [r'$\mathrm{This\; work}$'], handler_map={object: AnyObjectHandler()}, frameon=False, loc=2)
+legend1 = ax1.legend([object], [r'$\mathrm{This\; work}$'], handler_map={object:AnyObjectHandler()}, frameon=False,
+                     loc=2)
 
 
 class AnyObjectHandler(HandlerBase):
@@ -213,24 +222,27 @@ class AnyObjectHandler(HandlerBase):
         return [l1, l2, l3]
 
 
-legend2 = ax1.legend([object], [r'$\mathrm{HWT15}$'], handler_map={object: AnyObjectHandler()}, frameon=False, loc=1)
+legend2 = ax1.legend([object], [r'$\mathrm{HWT15}$'], handler_map={object:AnyObjectHandler()}, frameon=False, loc=1)
 
 colors = ['blue', 'green', 'red']
 circles = collections.CircleCollection([10] * 3, facecolor=colors)
 colors = ['blue', 'green', 'red']
 squares = collections.RegularPolyCollection(numsides=4, rotation=0.785, sizes=(20,), facecolors=colors)
 
-legend3 = ax1.legend([squares, circles], [r'$\mathrm{Kelvin+14}$', r'$\mathrm{Conselice\, 06}$'], scatterpoints=len(colors), scatteryoffsets=[.5],
-                     handlelength=len(colors), markerscale=2, frameon=False, loc=9)
+legend3 = ax1.legend([squares, circles], [r'$\mathrm{Kelvin+14}$', r'$\mathrm{Conselice\, 06}$'],
+                     scatterpoints=len(colors), scatteryoffsets=[.5], handlelength=len(colors), markerscale=2,
+                     frameon=False, loc=9)
 
 ax1.add_artist(legend1)
 ax1.add_artist(legend2)
 ax1.add_artist(legend3)
 
 # Add text annotation #
-ax1.annotate(r'$\mathrm{0.01 < M_{b} / M_{\bigstar} < 0.7}$', xy=(0.01, 0.02), xycoords='axes fraction', color='green', size=15)
+ax1.annotate(r'$\mathrm{0.01 < M_{b} / M_{\bigstar} < 0.7}$', xy=(0.01, 0.02), xycoords='axes fraction', color='green',
+             size=15)
 ax1.annotate(r'$\mathrm{M_{b} / M_{\bigstar} > 0.7}$', xy=(0.46, 0.02), xycoords='axes fraction', color='red', size=15)
-ax1.annotate(r'$\mathrm{M_{b} / M_{\bigstar} < 0.01}$', xy=(0.81, 0.02), xycoords='axes fraction', color='blue', size=15)
+ax1.annotate(r'$\mathrm{M_{b} / M_{\bigstar} < 0.01}$', xy=(0.81, 0.02), xycoords='axes fraction', color='blue',
+             size=15)
 
 ######################################################################################################################################################
 
@@ -245,11 +257,13 @@ MID16DiskDomBot = np.genfromtxt('./Obs_Data/MID16DiskDomBot.csv', delimiter=',',
 
 # Plot observational data from MID16 #
 median, = ax2.plot(MID16SphDom['StellarMass'], MID16SphDom['Fraction'], linestyle="dashed", color='red')
-ax2.fill_between(MID16SphDomTop['StellarMass'], MID16SphDomTop['Fraction'], MID16SphDomBot['Fraction'], color='red', alpha='0.5', zorder=2)
+ax2.fill_between(MID16SphDomTop['StellarMass'], MID16SphDomTop['Fraction'], MID16SphDomBot['Fraction'], color='red',
+                 alpha='0.5', zorder=2)
 fill, = plt.fill(np.NaN, np.NaN, color='red', alpha=0.5)
 
 median1, = ax2.plot(MID16DiskDom['StellarMass'], MID16DiskDom['Fraction'], linestyle="dashed", color='blue')
-ax2.fill_between(MID16DiskDomTop['StellarMass'], MID16DiskDomTop['Fraction'], MID16DiskDomBot['Fraction'], color='blue', alpha='0.5', zorder=2)
+ax2.fill_between(MID16DiskDomTop['StellarMass'], MID16DiskDomTop['Fraction'], MID16DiskDomBot['Fraction'], color='blue',
+                 alpha='0.5', zorder=2)
 fill1, = plt.fill(np.NaN, np.NaN, color='blue', alpha=0.5)
 
 # Divisions between bulge classes #
@@ -299,9 +313,11 @@ for iBin in range(nBin):
     allBin = len(indThisBin)
 
     # Bulges
-    yBulge[iBin] = len(np.where((log10BulgeHWT15[indThisBin] - log10StellarMassHWT15[indThisBin]) > logRatio1)[0]) / float(allBin)
+    yBulge[iBin] = len(
+        np.where((log10BulgeHWT15[indThisBin] - log10StellarMassHWT15[indThisBin]) > logRatio1)[0]) / float(allBin)
     # Disks
-    yDisk[iBin] = len(np.where((log10BulgeHWT15[indThisBin] - log10StellarMassHWT15[indThisBin]) < logRatio2)[0]) / float(allBin)
+    yDisk[iBin] = len(
+        np.where((log10BulgeHWT15[indThisBin] - log10StellarMassHWT15[indThisBin]) < logRatio2)[0]) / float(allBin)
 
 # Plot L-Galaxies data #
 ax2.plot(x, yDisk, color='blue', lw=2, linestyle='dotted')
@@ -350,9 +366,11 @@ for iBin in range(nBin):
     allBin = len(indThisBin)
 
     # Bulges
-    yBulge[iBin] = len(np.where((log10BulgeHWT15[indThisBin] - log10StellarMassHWT15[indThisBin]) > logRatio1)[0]) / float(allBin)
+    yBulge[iBin] = len(
+        np.where((log10BulgeHWT15[indThisBin] - log10StellarMassHWT15[indThisBin]) > logRatio1)[0]) / float(allBin)
     # Disks
-    yDisk[iBin] = len(np.where((log10BulgeHWT15[indThisBin] - log10StellarMassHWT15[indThisBin]) < logRatio2)[0]) / float(allBin)
+    yDisk[iBin] = len(
+        np.where((log10BulgeHWT15[indThisBin] - log10StellarMassHWT15[indThisBin]) < logRatio2)[0]) / float(allBin)
 
 
 # Plot L-Galaxies data #
@@ -369,7 +387,8 @@ class AnyObjectHandler(HandlerBase):
         return [l1, l2]
 
 
-legend1 = ax2.legend([object, object], [r'$\mathrm{This\; work}$'], handler_map={object: AnyObjectHandler()}, frameon=False, loc=2)
+legend1 = ax2.legend([object, object], [r'$\mathrm{This\; work}$'], handler_map={object:AnyObjectHandler()},
+                     frameon=False, loc=2)
 
 
 class AnyObjectHandler(HandlerBase):
@@ -379,21 +398,23 @@ class AnyObjectHandler(HandlerBase):
         return [l1, l2]
 
 
-legend2 = ax2.legend([object, object], [r'$\mathrm{HWT15}$'], handler_map={object: AnyObjectHandler()}, frameon=False, loc=1)
+legend2 = ax2.legend([object, object], [r'$\mathrm{HWT15}$'], handler_map={object:AnyObjectHandler()}, frameon=False,
+                     loc=1)
 
 legend3 = plt.legend([median1, fill1, median, fill],
-                     [r'$\mathrm{Disc-Dom}$', r'$\mathrm{Error\,ranges}$', r'$\mathrm{Sph-Dom}$', r'$\mathrm{Error\,ranges}$'], loc=6)
+                     [r'$\mathrm{Disc-Dom}$', r'$\mathrm{Error\,ranges}$', r'$\mathrm{Sph-Dom}$',
+                      r'$\mathrm{Error\,ranges}$'], loc=6)
 
 ax2.add_artist(legend1)
 ax2.add_artist(legend2)
 ax2.add_artist(legend3)
 
 # Add text annotation #
-ax2.annotate(r'$\mathrm{Moffett+16:}$', xy=(0.022, 0.645), xycoords='axes fraction', size=17)
+ax2.annotate(r'$\mathrm{Moffett+16:}$', xy=(0.022, 0.645), xycoords='axes fraction', size=15)
 ax2.annotate(r'$\mathrm{M_{b} / M_{\bigstar} > 0.3}$', xy=(0.01, 0.02), xycoords='axes fraction', color='red', size=15)
 ax2.annotate(r'$\mathrm{M_{b} / M_{\bigstar} < 0.3}$', xy=(0.83, 0.02), xycoords='axes fraction', color='blue', size=15)
 
 ######################################################################################################################################################
 
 # Save the figure #
-plt.savefig('Gal_Frac_58-' + date + '.png', bbox_inches='tight')
+plt.savefig('Gal_Frac_58-' + date + '.pdf', bbox_inches='tight')

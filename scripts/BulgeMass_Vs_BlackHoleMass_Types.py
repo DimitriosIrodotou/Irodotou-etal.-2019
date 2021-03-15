@@ -69,10 +69,10 @@ ax1.legend(frameon=False, loc=1, scatterpoints=sp)
 
 ######################################################################################################################################################
 
-ax2.scatter(KH13_CB['Mb'], KH13_CB['Mbh'], color='orange', edgecolor='black', s=3 * size, marker='*', label=r'$\mathrm{Kormendy+13: CBs}$', zorder=2)
+ax2.scatter(KH13_CB['Mb'], KH13_CB['Mbh'], color='orange', edgecolor='black', s=3 * 50, marker='*', label=r'$\mathrm{Kormendy+13: CBs}$', zorder=2)
 
 # Plot L-Galaxies data - 2D histogram #
-h = ax2.hexbin(Bulge_Mass2, BH_Mass2, xscale='log', yscale='log', bins='log', cmap='Oranges', mincnt=mc, gridsize=100)
+h = ax2.hexbin(Bulge_Mass2, BH_Mass2, xscale='log', yscale='log', bins='log', cmap='Oranges', mincnt=2, gridsize=100)
 
 # Adjust the color bar #
 cbaxes = figure.add_axes([0.9, 0.366, 0.02, 0.257])
@@ -86,14 +86,14 @@ legend2 = ax2.legend([squares], [r'$\mathrm{This\;work:M_{cb} > 0.0}$'], scatter
                      markerscale=2, frameon=False, loc=2)
 
 ax2.add_artist(legend2)
-ax2.legend(frameon=False, loc=1, scatterpoints=sp)
+ax2.legend(frameon=False, loc=1, scatterpoints=3)
 
 ########################################################################################################################
 
-ax3.scatter(KH13_PB['Mb'], KH13_PB['Mbh'], color='g', edgecolor='black', s=3 * size, marker='*', label=r'$\mathrm{Kormendy+13: PBs}$', zorder=2)
+ax3.scatter(KH13_PB['Mb'], KH13_PB['Mbh'], color='g', edgecolor='black', s=3 * 50, marker='*', label=r'$\mathrm{Kormendy+13: PBs}$', zorder=2)
 
 # Plot L-Galaxies data - 2D histogram #
-h = ax3.hexbin(Bulge_Mass3, BH_Mass3, xscale='log', yscale='log', bins='log', cmap='Greens', mincnt=mc, gridsize=50)
+h = ax3.hexbin(Bulge_Mass3, BH_Mass3, xscale='log', yscale='log', bins='log', cmap='Greens', mincnt=2, gridsize=50)
 
 # Adjust the color bar #
 cbaxes = figure.add_axes([0.9, 0.11, 0.02, 0.257])
@@ -107,9 +107,9 @@ legend3 = ax3.legend([squares], [r'$\mathrm{This\;work:M_{pb} > 0.0}$'], scatter
                      markerscale=2, frameon=False, loc=2)
 
 ax3.add_artist(legend3)
-ax3.legend(frameon=False, loc=1, scatterpoints=sp)
+ax3.legend(frameon=False, loc=1, scatterpoints=3)
 
 ######################################################################################################################################################
 
 # Save the figure #
-plt.savefig('BM_Vs_BHM_Types_58-' + date + '.png', bbox_inches='tight')
+plt.savefig('BM_Vs_BHM_Types_58-' + date + '.pdf', bbox_inches='tight')

@@ -37,7 +37,7 @@ G09 = np.genfromtxt('./Obs_Data/G09.txt', delimiter=';', skip_header=1,
 index = np.where((G09['Type'] == 'pseudo-bulge'))
 
 # Plot observational data from G09 #
-scatter = plt.scatter(G09['Md'][index], G09['Mb'][index], c='lime', edgecolor='black', s=size, zorder=2, label=r'$\mathrm{Gadotti\, 09: PBs}$')
+scatter = plt.scatter(G09['Md'][index], G09['Mb'][index], c='lime', edgecolor='black', s=50, zorder=2, label=r'$\mathrm{Gadotti\, 09: PBs}$')
 
 # Create the legends #
 colors = ['black', 'grey', 'lightgrey']
@@ -46,10 +46,10 @@ legend = plt.legend([squares], [r'$\mathrm{This\;work}$'], scatterpoints=len(col
                     frameon=False, loc=1)
 
 plt.gca().add_artist(legend)
-plt.legend(frameon=False, scatterpoints=sp, loc=2)
+plt.legend(frameon=False, scatterpoints=3, loc=2)
 
 # Plot L-Galaxies data - 2D histogram #
-hexbin = plt.hexbin(DiskMass, PBMass, xscale='log', yscale='log', bins='log', cmap='Greys', mincnt=mc, gridsize=150)
+hexbin = plt.hexbin(DiskMass, PBMass, xscale='log', yscale='log', bins='log', cmap='Greys', mincnt=2, gridsize=150)
 
 # Adjust the color bar #
 cbaxes = figure.add_axes([0.9, 0.11, 0.02, 0.77])
@@ -59,4 +59,4 @@ cb.set_label('$\mathrm{Counts\; per\; hexbin}$')
 ######################################################################################################################################################
 
 # Save the figure #
-plt.savefig('DM_Vs_PBM_56-' + date + '.png', bbox_inches='tight')
+plt.savefig('DM_Vs_PBM_56-' + date + '.pdf', bbox_inches='tight')

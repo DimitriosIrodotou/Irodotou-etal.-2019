@@ -19,6 +19,7 @@ for iFile in range(firstFile, lastFile + 1):
 
 # Declare numpy arrays to hold the data #
 SHMR = np.empty(nGal)
+Mvir = np.empty(nGal)
 Sfr = np.empty(nGal)
 Type = np.empty(nGal)
 Vmax = np.empty(nGal)
@@ -33,6 +34,7 @@ CBMassMajor = np.empty(nGal)
 CBMassMinor = np.empty(nGal)
 StellarMass = np.empty(nGal)
 BlackHoleMass = np.empty(nGal)
+HaloSpin = np.empty([nGal, 3])
 DiskSpin = np.empty([nGal, 3])
 BulgeSpin = np.empty([nGal, 3])
 
@@ -43,6 +45,7 @@ for iFile in range(firstFile, lastFile + 1):
     with h5py.File(OutputPath + filePrefix + '%i' % iFile + filePostfix, 'r') as f:
         nGalFile = len(f[snap])
         # Masses #
+        Mvir[iGal:iGal + nGalFile] = f[snap]['Mvir']
         PBMass[iGal:iGal + nGalFile] = f[snap]['PBMass']
         CBMass[iGal:iGal + nGalFile] = f[snap]['CBMass']
         ColdGas[iGal:iGal + nGalFile] = f[snap]['ColdGas']
@@ -58,6 +61,7 @@ for iFile in range(firstFile, lastFile + 1):
         SHMR[iGal:iGal + nGalFile] = f[snap]['StellarHalfMassRadius']
 
         # Spins #
+        HaloSpin[iGal:iGal + nGalFile] = f[snap]['HaloSpin']
         DiskSpin[iGal:iGal + nGalFile] = f[snap]['DiskSpin']
         BulgeSpin[iGal:iGal + nGalFile] = f[snap]['BulgeSpin']
 
@@ -70,6 +74,7 @@ for iFile in range(firstFile, lastFile + 1):
         iGal += nGalFile
 
 # Save the arrays so you can load them multiple times in different scripts #
+np.save(SavePath + 'Mvir', Mvir)
 np.save(SavePath + 'PBMass', PBMass)
 np.save(SavePath + 'CBMass', CBMass)
 np.save(SavePath + 'ColdGas', ColdGas)
@@ -83,6 +88,7 @@ np.save(SavePath + 'BlackHoleMass', BlackHoleMass)
 np.save(SavePath + 'DiskRadius', DiskRadius)
 np.save(SavePath + 'StellarHalfMassRadius', SHMR)
 
+np.save(SavePath + 'HaloSpin', HaloSpin)
 np.save(SavePath + 'DiskSpin', DiskSpin)
 np.save(SavePath + 'BulgeSpin', BulgeSpin)
 

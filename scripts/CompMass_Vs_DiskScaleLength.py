@@ -33,26 +33,27 @@ plt.ylim(1e-1, 9e1)
 ax1.set_xlim(1e9, 1e12)
 ax2.set_xlim(1e9, 1e12)
 
-ax1.set_ylabel(r'$\mathrm{R_{disc} / kpc}$')
-ax2.set_ylabel(r'$\mathrm{R_{disc} / kpc}$')
-ax2.set_xlabel(r'$\mathrm{M_{comp.} / M_{\odot}}$')
+ax1.set_ylabel(r'$\mathrm{R_{disc} / kpc}$', size=25)
+ax2.set_ylabel(r'$\mathrm{R_{disc} / kpc}$', size=25)
+ax2.set_xlabel(r'$\mathrm{M_{comp.} / M_{\odot}}$', size=25)
 
 ax1.set_xticklabels([])
-ax1.tick_params(direction='in', which='both', top='on', right='on')
-ax2.tick_params(direction='in', which='both', top='on', right='on')
+ax1.tick_params(direction='in', which='both', top='on', right='on', labelsize=25)
+ax2.tick_params(direction='in', which='both', top='on', right='on', labelsize=25)
 
 ######################################################################################################################################################
 
 # Read observational data from G09 #
 G09 = np.genfromtxt('./Obs_Data/G09.txt', delimiter=';', skip_header=1,
-                    dtype=[('Type', 'U15'), ('Type2', 'U15'), ('h', 'f8'), ('re', 'f8'), ('BtoT', 'f8'), ('MtoLb', 'f8'), ('MtoLd', 'f8'),
-                           ('Mb', 'f8'), ('Md', 'f8')])
+                    dtype=[('Type', 'U15'), ('Type2', 'U15'), ('h', 'f8'), ('re', 'f8'), ('BtoT', 'f8'),
+                           ('MtoLb', 'f8'), ('MtoLd', 'f8'), ('Mb', 'f8'), ('Md', 'f8')])
 
 # Trim observational data from G09 #
 index = np.where((G09['Type'] == 'classical   ') | (G09['Type2'] == 'classical   '))
 
 # Plot observational data from G09 #
-scatter = ax1.scatter(G09['Mb'][index], G09['h'][index], c='magenta', edgecolor='black', s=size, zorder=2, label=r'$\mathrm{Gadotti\, 09: CBs}$')
+scatter = ax1.scatter(G09['Mb'][index], G09['h'][index], c='magenta', edgecolor='black', s=50, zorder=2,
+                      label=r'$\mathrm{Gadotti\, 09: CBs}$')
 
 # Calculate median and 1-sigma #
 log10X = np.log10(CB_Mass_Minor)
@@ -79,10 +80,12 @@ ax1.fill_between(X, shigh, slow, color='magenta', alpha='0.5', zorder=2)
 fill, = plt.fill(np.NaN, np.NaN, color='magenta', alpha=0.5)
 
 # Create the legends #
-legend1 = ax1.legend([median, fill], [r'$\mathrm{This\; work: Median}$', r'$\mathrm{This\; work:16^{th} - 84^{th}\,\%ile}$'], frameon=False, loc=2)
+legend1 = ax1.legend([median, fill],
+                     [r'$\mathrm{This\; work: Median}$', r'$\mathrm{This\; work:16^{th} - 84^{th}\,\%ile}$'],
+                     frameon=False, loc=2)
 
 ax1.add_artist(legend1)
-ax1.legend(frameon=False, loc=4, scatterpoints=sp)
+ax1.legend(frameon=False, loc=4, scatterpoints=3)
 
 ######################################################################################################################################################
 
@@ -90,7 +93,8 @@ ax1.legend(frameon=False, loc=4, scatterpoints=sp)
 index = np.where((G09['Type'] == 'pseudo-bulge') | (G09['Type2'] == 'pseudo-bulge'))
 
 # Plot observational data from G09 #
-scatter = ax2.scatter(G09['Mb'][index], G09['h'][index], c='green', edgecolor='black', s=size, zorder=2, label=r'$\mathrm{Gadotti\, 09: PBs}$')
+scatter = ax2.scatter(G09['Mb'][index], G09['h'][index], c='green', edgecolor='black', s=50, zorder=2,
+                      label=r'$\mathrm{Gadotti\, 09: PBs}$')
 
 # Calculate median and 1-sigma #
 log10X = np.log10(PB_Mass)
@@ -117,10 +121,12 @@ ax2.fill_between(X, shigh, slow, color='green', alpha='0.5', zorder=2)
 fill, = plt.fill(np.NaN, np.NaN, color='green', alpha=0.5)
 
 # Create the legends #
-legend3 = ax2.legend([median, fill], [r'$\mathrm{This\; work: Median}$', r'$\mathrm{This\; work:16^{th}-84^{th}\,\%ile}$'], frameon=False, loc=2)
+legend3 = ax2.legend([median, fill],
+                     [r'$\mathrm{This\; work: Median}$', r'$\mathrm{This\; work:16^{th}-84^{th}\,\%ile}$'],
+                     frameon=False, loc=2)
 
 ax2.add_artist(legend3)
-ax2.legend(frameon=False, loc=4, scatterpoints=sp)
+ax2.legend(frameon=False, loc=4, scatterpoints=3)
 
 ######################################################################################################################################################
 

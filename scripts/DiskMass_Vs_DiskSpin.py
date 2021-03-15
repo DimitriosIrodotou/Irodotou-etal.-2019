@@ -3,9 +3,10 @@ DiskMass = np.load(SavePath + 'DiskMass.npy')
 DiskSpin = np.load(SavePath + 'DiskSpin.npy')
 StellarMass = np.load(SavePath + 'StellarMass.npy')
 
-DiskMassHWT15 = np.load(SavePath + 'HWT15/' + 'DiskMass.npy')
-DiskSpinHWT15 = np.load(SavePath + 'HWT15/' + 'DiskSpin.npy')
-StellarMassHWT15 = np.load(SavePath + 'HWT15/' + 'StellarMass.npy')
+SavePath = '/Volumes/BAM-BLACK/output/output_ITH_Off/58/'
+DiskMassHWT15 = np.load(SavePath + 'DiskMass.npy')
+DiskSpinHWT15 = np.load(SavePath + 'DiskSpin.npy')
+StellarMassHWT15 = np.load(SavePath + 'StellarMass.npy')
 
 # Trim the data #
 index = np.where(DiskMass > 0.7 * StellarMass)
@@ -23,7 +24,7 @@ dlog10 = 0.1
 # Generate initial figure #
 plt.close()
 figure, (ax1, ax2) = plt.subplots(ncols=2, figsize=(20, 7.5))
-figure.subplots_adjust(hspace=0, wspace=0.3)
+figure.subplots_adjust(hspace=0, wspace=0.37)
 
 # Figure parameters #
 ax1.set_xscale('log')
@@ -36,14 +37,14 @@ ax2.set_ylim(1e1, 1e5)
 ax1.set_xlim(1e9, 1e12)
 ax2.set_xlim(1e9, 1e12)
 
-ax1.set_xlabel(r'$\mathrm{M_{d,\bigstar} / M_{\odot}}$')
-ax2.set_xlabel(r'$\mathrm{M_{d,\bigstar} / M_{\odot}}$')
-ax1.set_ylabel(r'$\mathrm{|j_{d,\bigstar}| / (km \cdot s^{-1} \cdot kpc)}$')
-ax2.set_ylabel(r'$\mathrm{|j_{d,\bigstar}| / (km \cdot s^{-1} \cdot kpc)}$')
+ax1.set_xlabel(r'$\mathrm{M_{d,\bigstar} / M_{\odot}}$', size=25)
+ax2.set_xlabel(r'$\mathrm{M_{d,\bigstar} / M_{\odot}}$', size=25)
+ax1.set_ylabel(r'$\mathrm{|j_{d,\bigstar}| / (km \cdot s^{-1} \cdot kpc)}$', size=25)
+ax2.set_ylabel(r'$\mathrm{|j_{d,\bigstar}| / (km \cdot s^{-1} \cdot kpc)}$', size=25)
 
 ax1.set_xticklabels([])
-ax1.tick_params(direction='in', which='both', top='on', right='on')
-ax2.tick_params(direction='in', which='both', top='on', right='on')
+ax1.tick_params(direction='in', which='both', top='on', right='on', labelsize=25)
+ax2.tick_params(direction='in', which='both', top='on', right='on', labelsize=25)
 
 ######################################################################################################################################################
 
@@ -54,18 +55,19 @@ y = [10 ** 1.995464853, 10 ** 3.986394558]
 OG14 = np.genfromtxt('./Obs_Data/OG14.csv', delimiter=',', names=['Md', 'jd'])
 
 # Plot observational data from FR13 and OG14 #
-ax1.scatter(np.power(10, FR13['Md']), np.power(10, FR13['jd']), edgecolor='black', color='blue', s=size, marker='s',
+ax1.scatter(np.power(10, FR13['Md']), np.power(10, FR13['jd']), edgecolor='black', color='blue', s=50, marker='s',
             label=r'$\mathrm{Fall\; &\; Romanowsky\, 13}$', zorder=4)
-ax1.scatter(np.power(10, OG14['Md']), np.power(10, OG14['jd']), edgecolor='black', color='lime', s=size, marker='^',
+ax1.scatter(np.power(10, OG14['Md']), np.power(10, OG14['jd']), edgecolor='black', color='lime', s=50, marker='^',
             label=r'$\mathrm{Obreschkow\; &\; Glazebrook\, 14}$', zorder=4)
 
 # Plot L-Galaxies data - 2D histogram #
-hexbin = ax1.hexbin(Disk_Mass, Disk_Spin, xscale='log', yscale='log', bins='log', cmap='Greys', gridsize=gs, mincnt=mc)
+hexbin = ax1.hexbin(Disk_Mass, Disk_Spin, xscale='log', yscale='log', bins='log', cmap='Greys', mincnt=2)
 
 # Adjust the color bar #
-cbaxes = figure.add_axes([0.462, 0.11, 0.01, 0.77])
+cbaxes = figure.add_axes([0.452, 0.11, 0.01, 0.77])
 cb = plt.colorbar(hexbin, cax=cbaxes)
-cb.set_label('$\mathrm{Counts\; per\; hexbin}$')
+cbaxes.tick_params(direction='out', which='both', right='on', labelsize=25)
+cb.set_label('$\mathrm{Counts\; per\; hexbin}$', size=25)
 
 # Create the legends #
 colors = ['black', 'grey', 'lightgrey']
@@ -74,7 +76,7 @@ legend1 = ax1.legend([squares], [r'$\mathrm{This\;work:M_{d,\bigstar} / M_{\bigs
                      handlelength=len(colors), markerscale=2, frameon=False, loc=2)
 
 ax1.add_artist(legend1)
-ax1.legend(frameon=False, ncol=1, loc=4, scatterpoints=sp)
+ax1.legend(frameon=False, ncol=1, loc=4, scatterpoints=3)
 
 ######################################################################################################################################################
 
@@ -133,9 +135,9 @@ legend3 = ax2.legend([median], [r'$\mathrm{HWT15: Median}$'], frameon=False, loc
 
 ax2.add_artist(legend2)
 ax2.add_artist(legend3)
-ax2.legend(frameon=False, ncol=1, loc=4, scatterpoints=sp)
+ax2.legend(frameon=False, ncol=1, loc=4, scatterpoints=3)
 
 ######################################################################################################################################################
 
 # Save the figure #
-plt.savefig('DM_Vs_DS_58-' + date + '.png', bbox_inches='tight')
+plt.savefig('DM_Vs_DS_58-' + date + '.pdf', bbox_inches='tight')

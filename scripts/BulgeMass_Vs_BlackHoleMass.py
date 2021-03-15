@@ -32,17 +32,17 @@ BN18 = np.genfromtxt('./Obs_Data/BN18.csv', delimiter=',', names=['Mb', 'xerr', 
 yerr = [np.log10(HR04['Mbh'] / HR04['yminus']), np.log10(HR04['yplus'] / HR04['Mbh'])]
 
 plt.errorbar(np.log10(HR04['Mb'] * 1e10 * hubble ** 2), np.log10(HR04['Mbh'] * 1e10 * hubble), yerr=yerr, fmt='s', ecolor='blue', color='blue',
-             markersize=ms, label=r'$\mathrm{H\ddot{a}ring\; &\; Rix\, 04}$', zorder=3)
+             markersize=3, label=r'$\mathrm{H\ddot{a}ring\; &\; Rix\, 04}$', zorder=3)
 
 xerr = np.zeros(len(np.log10(MM04['col14'] * hubble ** 2)), dtype=np.float64) + 0.24
 yerr = [np.log10(MM04['col3'] / MM04['col4']), np.log10(MM04['col5'] / MM04['col3'])]
 
 plt.errorbar(np.log10(MM04['col14'] * hubble ** 2), np.log10(MM04['col3'] * hubble), xerr=xerr, yerr=yerr, fmt='o', ecolor='lime', color='lime',
-             markersize=ms, label=r'$\mathrm{McConnell\; &\; Ma\, 12}$', zorder=3)
+             markersize=3, label=r'$\mathrm{McConnell\; &\; Ma\, 12}$', zorder=3)
 
 xerr = [BN18['xerr'], BN18['xerr']]
 yerr = [BN18['yminus'], BN18['yplus']]
-plt.errorbar(BN18['Mb'], BN18['Mbh'], xerr=xerr, yerr=yerr, fmt='s', ecolor='red', color='red', markersize=ms,
+plt.errorbar(BN18['Mb'], BN18['Mbh'], xerr=xerr, yerr=yerr, fmt='s', ecolor='red', color='red', markersize=3,
              label=r'$\mathrm{Bentz\; &\; Manne\operatorname{-}Nicholas\, 18}$', zorder=3)
 
 # Create the legends #
@@ -55,7 +55,7 @@ plt.gca().add_artist(legend)
 plt.legend(frameon=False, loc=2)
 
 # Plot L-Galaxies data - 2D histogram #
-hexbin = plt.hexbin(Bulge_Mass, Black_Hole_Mass, bins='log', cmap="Greys", gridsize=gs, mincnt=mc)
+hexbin = plt.hexbin(Bulge_Mass, Black_Hole_Mass, bins='log', cmap="Greys", mincnt=2)
 
 # Adjust the color bar #
 cbaxes = figure.add_axes([0.9, 0.11, 0.02, 0.77])
@@ -65,7 +65,7 @@ cb.set_label('$\mathrm{Counts\; per\; hexbin}$')
 ######################################################################################################################################################
 
 # Save the figure #
-plt.savefig('BM_Vs_BHM_58-' + date + '.png', bbox_inches='tight')
+plt.savefig('BM_Vs_BHM_58-' + date + '.pdf', bbox_inches='tight')
 
 # Plot L-Galaxies data - contour #
 # xlim = [8.5, 12.5]

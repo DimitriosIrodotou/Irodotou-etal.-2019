@@ -3,9 +3,10 @@ CBMassMajor = np.load(SavePath + 'CBMassMajor.npy')
 StellarMass = np.load(SavePath + 'StellarMass.npy')
 SHMR = np.load(SavePath + 'StellarHalfMassRadius.npy')
 
-CBMassMajorHWT15 = np.load(SavePath + 'HWT15/' + 'CBMassMajor.npy')
-StellarMassHWT15 = np.load(SavePath + 'HWT15/' + 'StellarMass.npy')
-SHMRHWT15 = np.load(SavePath + 'HWT15/' + 'StellarHalfMassRadius.npy')
+SavePath = '/Volumes/BAM-BLACK/output/output_ITH_Off/58/'
+CBMassMajorHWT15 = np.load(SavePath + 'CBMassMajor.npy')
+StellarMassHWT15 = np.load(SavePath + 'StellarMass.npy')
+SHMRHWT15 = np.load(SavePath + 'StellarHalfMassRadius.npy')
 
 # Trim the data #
 index = np.where(CBMassMajor > 0.7 * StellarMass)
@@ -24,7 +25,7 @@ dlog10 = 0.3
 plt.close()
 figure, ax = plt.subplots()
 figure, (ax1, ax2) = plt.subplots(ncols=2, figsize=(20, 7.5))
-figure.subplots_adjust(hspace=0, wspace=0.3)
+figure.subplots_adjust(hspace=0, wspace=0.37)
 
 # Figure parameters #
 ax1.set_xscale('log')
@@ -37,14 +38,14 @@ ax2.set_xlim(1e9, 1e12)
 ax1.set_ylim(1e-1, 1e2)
 ax2.set_ylim(1e-1, 1e2)
 
-ax1.set_ylabel(r'$\mathrm{R_{HM} / kpc}$')
-ax2.set_ylabel(r'$\mathrm{R_{HM} / kpc}$')
-ax1.set_xlabel(r'$\mathrm{M_{\bigstar} / M_{\odot}}$')
-ax2.set_xlabel(r'$\mathrm{M_{\bigstar} / M_{\odot}}$')
+ax1.set_ylabel(r'$\mathrm{R_{HM} / kpc}$', size=25)
+ax2.set_ylabel(r'$\mathrm{R_{HM} / kpc}$', size=25)
+ax1.set_xlabel(r'$\mathrm{M_{\bigstar} / M_{\odot}}$', size=25)
+ax2.set_xlabel(r'$\mathrm{M_{\bigstar} / M_{\odot}}$', size=25)
 
 ax1.set_xticklabels([])
-ax1.tick_params(direction='in', which='both', top='on', right='on')
-ax2.tick_params(direction='in', which='both', top='on', right='on')
+ax1.tick_params(direction='in', which='both', top='on', right='on', labelsize=25)
+ax2.tick_params(direction='in', which='both', top='on', right='on', labelsize=25)
 
 ######################################################################################################################################################
 
@@ -61,41 +62,48 @@ SMW03ETGsb = np.genfromtxt('./Obs_Data/SMW03_ETGsb.csv', delimiter=',', names=['
 ytop = np.array(SMW03ETGst['R50']) - np.array(SMW03ETGsm['R50'])
 ybot = np.array(SMW03ETGsm['R50']) - np.array(SMW03ETGsb['R50'])
 G09 = np.genfromtxt('./Obs_Data/G09.txt', delimiter=';', skip_header=1,
-                    dtype=[('Type', 'U15'), ('Type2', 'U15'), ('h', 'f8'), ('re', 'f8'), ('BtoT', 'f8'), ('MtoLb', 'f8'), ('MtoLd', 'f8'),
-                           ('Mb', 'f8'), ('Md', 'f8')])
+                    dtype=[('Type', 'U15'), ('Type2', 'U15'), ('h', 'f8'), ('re', 'f8'), ('BtoT', 'f8'),
+                           ('MtoLb', 'f8'), ('MtoLd', 'f8'), ('Mb', 'f8'), ('Md', 'f8')])
 
 # Plot observational data from SMW03ETG,CCW10, FSS17, ZY17, CALIFAETGs, CMA13 and KCR17SP#
-scatter1 = ax1.errorbar(np.power(10, SMW03ETGsm['Mstar']), SMW03ETGsm['R50'], yerr=(ybot, ytop), color='lime', marker='o', linestyle="None",
-                        elinewidth=1, capsize=4, capthick=1, zorder=3)
-scatter2 = ax1.scatter(np.power(10, CCW10['Mstar']), np.power(10, CCW10['R50']), edgecolor='black', color='red', s=2 * size, marker='*', zorder=2)
-scatter3 = ax1.scatter(np.power(10, ZY17['Mstar']) / hubble ** 2, ZY17['R50'], edgecolor='black', color='cyan', s=size, marker='d', zorder=3)
-scatter4 = ax1.scatter(np.power(10, FSS17['Mstar']), np.power(10, FSS17['R50']), edgecolor='black', color='blue', s=size, marker='p', zorder=3)
-# scatter5 = ax1.scatter(np.power(10, CALIFAETGs['Mstar']), CALIFAETGs['R50'], c='g', marker='s', s=size/2, zorder=2)
-scatter6 = ax1.scatter(np.power(10, CMA13['Mstar']), CMA13['R50'], edgecolor='black', color='darkorange', s=size, marker='+', zorder=3)
-# scatter7 = ax1.scatter(np.power(10, KCR17SP['Mstar']), np.power(10, KCR17SP['R50']), color='magenta', s=size,
+scatter1 = ax1.errorbar(np.power(10, SMW03ETGsm['Mstar']), SMW03ETGsm['R50'], yerr=(ybot, ytop), color='lime',
+                        marker='o', linestyle="None", elinewidth=1, capsize=4, capthick=1, zorder=3)
+scatter2 = ax1.scatter(np.power(10, CCW10['Mstar']), np.power(10, CCW10['R50']), edgecolor='black', color='red',
+                       s=2 * 50, marker='*', zorder=2)
+scatter3 = ax1.scatter(np.power(10, ZY17['Mstar']) / hubble ** 2, ZY17['R50'], edgecolor='black', color='cyan', s=50,
+                       marker='d', zorder=3)
+scatter4 = ax1.scatter(np.power(10, FSS17['Mstar']), np.power(10, FSS17['R50']), edgecolor='black', color='blue',
+                       s=50, marker='p', zorder=3)
+# scatter5 = ax1.scatter(np.power(10, CALIFAETGs['Mstar']), CALIFAETGs['R50'], c='g', marker='s', s=50/2, zorder=2)
+scatter6 = ax1.scatter(np.power(10, CMA13['Mstar']), CMA13['R50'], edgecolor='black', color='darkorange', s=50,
+                       marker='+', zorder=3)
+# scatter7 = ax1.scatter(np.power(10, KCR17SP['Mstar']), np.power(10, KCR17SP['R50']), color='magenta', s=50,
 #                        marker='^', zorder=3)
 
 index = np.where(G09['Type'] == 'elliptical  ')
 G09_Stellar_Mass = G09['Mb'][index]
-scatter8 = ax1.scatter(G09_Stellar_Mass, G09['re'][index], edgecolor='black', color='Purple', s=size, marker='s', zorder=2)
+scatter8 = ax1.scatter(G09_Stellar_Mass, G09['re'][index], edgecolor='black', color='Purple', s=50, marker='s',
+                       zorder=2)
 
 # Plot L-Galaxies data - 2D histogram #
-hexbin = ax1.hexbin(Stellar_Mass, S_H_M_R, xscale='log', yscale='log', bins='log', cmap='Greys', mincnt=mc)
+hexbin = ax1.hexbin(Stellar_Mass, S_H_M_R, xscale='log', yscale='log', bins='log', cmap='Greys', mincnt=2)
 
 # Adjust the color bar #
-cbaxes = figure.add_axes([0.462, 0.11, 0.01, 0.77])
+cbaxes = figure.add_axes([0.452, 0.11, 0.01, 0.77])
 cb = plt.colorbar(hexbin, cax=cbaxes)
-cb.set_label('$\mathrm{Counts\; per\; hexbin}$')
+cbaxes.tick_params(direction='out', which='both', right='on', labelsize=25)
+cb.set_label('$\mathrm{Counts\; per\; hexbin}$', size=25)
 
 # Create the legends #
 legend1 = ax1.legend([scatter1, scatter2, scatter3, scatter4, scatter6, scatter8],
-                     [r'$\mathrm{Shen+03}$', r'$\mathrm{Chen+10}$', r'$\mathrm{Zhang+19}$', r'$\mathrm{Forbes+17}$', r'$\mathrm{Cappellari+13b}$',
-                      r'$\mathrm{Gadotti\, 09: Ellipticals}$'], ncol=2, scatterpoints=sp, frameon=False, loc=2)
+                     [r'$\mathrm{Shen+03}$', r'$\mathrm{Chen+10}$', r'$\mathrm{Zhang+19}$', r'$\mathrm{Forbes+17}$',
+                      r'$\mathrm{Cappellari+13b}$', r'$\mathrm{Gadotti\, 09: Ellipticals}$'], ncol=2, scatterpoints=3,
+                     frameon=False, loc=2)
 
 colors = ['black', 'grey', 'lightgrey']
 squares = collections.RegularPolyCollection(numsides=6, sizes=(20,), facecolors=colors)
-legend2 = ax1.legend([squares], [r'$\mathrm{This\;work:M_{cb(ma)} / M_{\bigstar} > 0.7}}$'], scatterpoints=len(colors), scatteryoffsets=[.5],
-                     handlelength=len(colors), markerscale=2, frameon=False, loc=4)
+legend2 = ax1.legend([squares], [r'$\mathrm{This\;work:M_{cb(ma)} / M_{\bigstar} > 0.7}}$'], scatterpoints=len(colors),
+                     scatteryoffsets=[.5], handlelength=len(colors), markerscale=2, frameon=False, loc=4)
 
 ax1.add_artist(legend1)
 ax1.add_artist(legend2)
@@ -127,7 +135,9 @@ ax2.fill_between(X, shigh, slow, color='black', alpha='0.5')
 fill, = plt.fill(np.NaN, np.NaN, color='black', alpha=0.5)
 
 # Create the legends #
-legend4 = ax2.legend([median, fill], [r'$\mathrm{This\; work: Median}$', r'$\mathrm{This\; work: 16^{th}-84^{th}\,\%ile}$'], frameon=False, loc=2)
+legend4 = ax2.legend([median, fill],
+                     [r'$\mathrm{This\; work: Median}$', r'$\mathrm{This\; work: 16^{th}-84^{th}\,\%ile}$'],
+                     frameon=False, loc=2)
 
 # Calculate median and 1-sigma #
 log10X = np.log10(Stellar_MassHWT15)
@@ -181,8 +191,9 @@ class AnyObjectHandler(HandlerBase):
 
 
 legend6 = ax2.legend([line1, line2, line3],
-                     [r'$\mathrm{Gadotti\, 09: Ellipticals}$', r'$\mathrm{Lange+15:Single\; p.l.}$', r'$\mathrm{Lange+15:Double\; p.l.}$'],
-                     handler_map={object: AnyObjectHandler()}, frameon=False, loc=4)
+                     [r'$\mathrm{Gadotti\, 09: Ellipticals}$', r'$\mathrm{Lange+15:Single\; p.l.}$',
+                      r'$\mathrm{Lange+15:Double\; p.l.}$'], handler_map={object:AnyObjectHandler()}, frameon=False,
+                     loc=4)
 
 ax2.add_artist(legend6)
 ax2.add_artist(legend4)
@@ -191,4 +202,4 @@ ax2.add_artist(legend5)
 ######################################################################################################################################################
 
 # Save the figure #
-plt.savefig('SM_Vs_SHMR_ETGs_55-' + date + '.png', bbox_inches='tight')
+plt.savefig('SM_Vs_SHMR_ETGs_55-' + date + '.pdf', bbox_inches='tight')

@@ -143,4 +143,4 @@ if snap == '25':
     ##################################################################################################################################################
 
     # Save the figure #
-    plt.savefig('CompMassRatio_Vs_SM_Evo-' + date + '.png', bbox_inches='tight')
+    plt.savefig('CompMassRatio_Vs_SM_Evo-' + date + '.pdf', bbox_inches='tight')

@@ -5,12 +5,12 @@ HaloSpin = np.load(SavePath + 'HaloSpin.npy')
 DiskSpin = np.load(SavePath + 'DiskSpin.npy')
 StellarMass = np.load(SavePath + 'StellarMass.npy')
 
-TypeHWT15 = np.load(SavePath + 'HWT15/' + 'Type.npy')
-MvirHWT15 = np.load(SavePath + 'HWT15/' + 'Mvir.npy')
-HaloSpinHWT15 = np.load(SavePath + 'HWT15/' + 'HaloSpin.npy')
-DiskSpinHWT15 = np.load(SavePath + 'HWT15/' + 'DiskSpin.npy')
-StellarMassHWT15 = np.load(SavePath + 'HWT15/' + 'StellarMass.npy')
-
+SavePath = '/Volumes/BAM-BLACK/output/output_ITH_Off/58/'
+TypeHWT15 = np.load(SavePath + 'Type.npy')
+MvirHWT15 = np.load(SavePath + 'Mvir.npy')
+HaloSpinHWT15 = np.load(SavePath + 'HaloSpin.npy')
+DiskSpinHWT15 = np.load(SavePath + 'DiskSpin.npy')
+StellarMassHWT15 = np.load(SavePath + 'StellarMass.npy')
 index = np.where((Type == 0) & (StellarMass * MassUnits > 1e9) & (Mvir * MassUnits > 1e11))
 indexHWT15 = np.where((TypeHWT15 == 0) & (StellarMassHWT15 * MassUnits > 1e9) & (MvirHWT15 * MassUnits > 1e11))
 
@@ -91,8 +91,9 @@ medianStars, = main_plot.plot(X, median, color='black', lw=lw)
 main_plot.fill_between(X, shigh, slow, color='black', alpha='0.2', zorder=2)
 fill, = main_plot.fill(np.NaN, np.NaN, color='black', alpha=0.5)
 
-legend1 = main_plot.legend([medianStars, fill], [r'$\mathrm{This\; work: Median}$', r'$\mathrm{This\; work: 16^{th}-84^{th}\,\%ile}$'], frameon=False,
-                           loc=2)
+legend1 = main_plot.legend([medianStars, fill],
+                           [r'$\mathrm{This\; work: Median}$', r'$\mathrm{This\; work: 16^{th}-84^{th}\,\%ile}$'],
+                           frameon=False, loc=2)
 
 # Calculate median and 1-sigma #
 log10X = np.log10(Mvir_HWT15)
@@ -119,7 +120,8 @@ main_plot.fill_between(X, shigh, slow, color='black', hatch="\\", alpha='0.1', z
 fillHWT15, = main_plot.fill(np.NaN, np.NaN, color='black', hatch="\\", alpha=0.3)
 
 # Create the legends #
-legend2 = main_plot.legend([medianStarsHWT15, fillHWT15], [r'$\mathrm{HWT15: Median}$', r'$\mathrm{HWT15: 16^{th}-84^{th}\,\%ile}$'], frameon=False,
+legend2 = main_plot.legend([medianStarsHWT15, fillHWT15],
+                           [r'$\mathrm{HWT15: Median}$', r'$\mathrm{HWT15: 16^{th}-84^{th}\,\%ile}$'], frameon=False,
                            loc=4)
 
 main_plot.add_artist(legend1)
@@ -131,14 +133,16 @@ plt.legend(frameon=False, loc=2)
 ######################################################################################################################################################
 
 x_hist.hist(M_vir, bins=np.logspace(9, 16, 50), histtype='step', orientation='vertical', color='black')
-x_hist.hist(Mvir_HWT15, bins=np.logspace(9, 16, 50), histtype='step', orientation='vertical', color='black', linestyle='dotted')
+x_hist.hist(Mvir_HWT15, bins=np.logspace(9, 16, 50), histtype='step', orientation='vertical', color='black',
+            linestyle='dotted')
 x_hist.invert_yaxis()
 
 y_HistStars.hist(RatioStars, bins=np.logspace(-3, 3, 50), histtype='step', orientation='horizontal', color='black')
-y_HistStars.hist(RatioStarsHWT15, bins=np.logspace(-3, 3, 50), histtype='step', orientation='horizontal', color='black', linestyle='dotted')
+y_HistStars.hist(RatioStarsHWT15, bins=np.logspace(-3, 3, 50), histtype='step', orientation='horizontal', color='black',
+                 linestyle='dotted')
 y_HistStars.invert_xaxis()
 
 ######################################################################################################################################################
 
 # Save the figure #
-plt.savefig('Mvir_Vs_DTHS-58' + date + '.png', bbox_inches='tight')
+plt.savefig('Mvir_Vs_DTHS-58' + date + '.pdf', bbox_inches='tight')

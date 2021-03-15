@@ -80,19 +80,19 @@ ax7.set_ylim(-0.05, 1.05)
 ax10.set_ylim(-0.05, 1.05)
 ax12.set_ylim(-0.05, 1.05)
 
-ax2.set_xlabel(r'$\mathrm{M_{\bigstar} / M_{\odot}}$')
-ax4.set_xlabel(r'$\mathrm{M_{\bigstar} / M_{\odot}}$')
-ax5.set_xlabel(r'$\mathrm{M_{\bigstar} / M_{\odot}}$')
-ax7.set_xlabel(r'$\mathrm{M_{\bigstar} / M_{\odot}}$')
-ax10.set_xlabel(r'$\mathrm{M_{\bigstar} / M_{\odot}}$')
-ax12.set_xlabel(r'$\mathrm{M_{\bigstar} / M_{\odot}}$')
+ax2.set_xlabel(r'$\mathrm{M_{\bigstar} / M_{\odot}}$', size=22)
+ax4.set_xlabel(r'$\mathrm{M_{\bigstar} / M_{\odot}}$', size=22)
+ax5.set_xlabel(r'$\mathrm{M_{\bigstar} / M_{\odot}}$', size=22)
+ax7.set_xlabel(r'$\mathrm{M_{\bigstar} / M_{\odot}}$', size=22)
+ax10.set_xlabel(r'$\mathrm{M_{\bigstar} / M_{\odot}}$', size=22)
+ax12.set_xlabel(r'$\mathrm{M_{\bigstar} / M_{\odot}}$', size=22)
 
-ax2.set_ylabel(r'$\mathrm{M_{b} / M_{\bigstar}}$')
-ax4.set_ylabel(r'$\mathrm{M_{d,\bigstar} / M_{\bigstar}}$')
-ax5.set_ylabel(r'$\mathrm{M_{pb} / M_{\bigstar}}$')
-ax7.set_ylabel(r'$\mathrm{M_{cb} / M_{\bigstar}}$')
-ax10.set_ylabel(r'$\mathrm{M_{cb(mi)} / M_{\bigstar}}$')
-ax12.set_ylabel(r'$\mathrm{M_{cb(ma)} / M_{\bigstar}}$')
+ax2.set_ylabel(r'$\mathrm{M_{b} / M_{\bigstar}}$', size=22)
+ax4.set_ylabel(r'$\mathrm{M_{d,\bigstar} / M_{\bigstar}}$', size=22)
+ax5.set_ylabel(r'$\mathrm{M_{pb} / M_{\bigstar}}$', size=22)
+ax7.set_ylabel(r'$\mathrm{M_{cb} / M_{\bigstar}}$', size=22)
+ax10.set_ylabel(r'$\mathrm{M_{cb(mi)} / M_{\bigstar}}$', size=22)
+ax12.set_ylabel(r'$\mathrm{M_{cb(ma)} / M_{\bigstar}}$', size=22)
 
 # Remove unwanted subplots #
 ax1.axis('off')
@@ -103,12 +103,12 @@ ax9.axis('off')
 ax11.axis('off')
 
 # Change ticks's position #
-ax2.tick_params(direction='in', which='both', top='on', right='on')
-ax4.tick_params(direction='in', which='both', top='on', right='on')
-ax5.tick_params(direction='in', which='both', top='on', right='on')
-ax7.tick_params(direction='in', which='both', top='on', right='on')
-ax10.tick_params(direction='in', which='both', top='on', right='on')
-ax12.tick_params(direction='in', which='both', top='on', right='on')
+ax2.tick_params(direction='in', which='both', top='on', right='on', labelsize=22)
+ax4.tick_params(direction='in', which='both', top='on', right='on', labelsize=22)
+ax5.tick_params(direction='in', which='both', top='on', right='on', labelsize=22)
+ax7.tick_params(direction='in', which='both', top='on', right='on', labelsize=22)
+ax10.tick_params(direction='in', which='both', top='on', right='on', labelsize=22)
+ax12.tick_params(direction='in', which='both', top='on', right='on', labelsize=22)
 
 ######################################################################################################################################################
 
@@ -121,28 +121,34 @@ p12 = ax12.hexbin(Stellar_Mass, CBMa_Ratio, xscale='log', bins='log', cmap=plt.c
 
 # Adjust the color bars #
 cbaxes = figure.add_axes([0.5125, 0.6235, 0.01, 0.2568])
-cb = plt.colorbar(p2, cax=cbaxes)
-cb.set_label(r'$\mathrm{Counts\, per\, hexbin}$')
+cb = plt.colorbar(p2, cax=cbaxes, ticks=[1e1, 1e3, 1e5])
+cbaxes.tick_params(direction='out', which='both', right='on', labelsize=22)
+cb.set_label(r'$\mathrm{Counts\, per\, hexbin}$', size=22)
 
 cbaxes = figure.add_axes([0.9, 0.6235, 0.01, 0.2568])
-cb = plt.colorbar(p4, cax=cbaxes)
-cb.set_label(r'$\mathrm{Counts\, per\, hexbin}$')
+cb = plt.colorbar(p4, cax=cbaxes, ticks=[1e1, 1e3, 1e5])
+cbaxes.tick_params(direction='out', which='both', right='on', labelsize=22)
+cb.set_label(r'$\mathrm{Counts\, per\, hexbin}$', size=22)
 
 cbaxes = figure.add_axes([0.319, 0.3665, 0.01, 0.2568])
-cb = plt.colorbar(p5, cax=cbaxes)
-cb.set_label(r'$\mathrm{Counts\, per\, hexbin}$')
+cb = plt.colorbar(p5, cax=cbaxes, ticks=[1e1, 1e3, 1e5])
+cbaxes.tick_params(direction='out', which='both', right='on', labelsize=22)
+cb.set_label(r'$\mathrm{Counts\, per\, hexbin}$', size=22)
 
 cbaxes = figure.add_axes([0.7065, 0.3665, 0.01, 0.2568])
-cb = plt.colorbar(p7, cax=cbaxes)
-cb.set_label(r'$\mathrm{Counts\, per\, hexbin}$')
+cb = plt.colorbar(p7, cax=cbaxes, ticks=[1e1, 1e3, 1e5])
+cbaxes.tick_params(direction='out', which='both', right='on', labelsize=22)
+cb.set_label(r'$\mathrm{Counts\, per\, hexbin}$', size=22)
 
 cbaxes = figure.add_axes([0.5125, 0.11, 0.01, 0.2568])
-cb = plt.colorbar(p10, cax=cbaxes)
-cb.set_label(r'$\mathrm{Counts\, per\, hexbin}$')
+cb = plt.colorbar(p10, cax=cbaxes, ticks=[1e1, 1e3, 1e5])
+cbaxes.tick_params(direction='out', which='both', right='on', labelsize=22)
+cb.set_label(r'$\mathrm{Counts\, per\, hexbin}$', size=22)
 
 cbaxes = figure.add_axes([0.9, 0.11, 0.01, 0.2568])
-cb = plt.colorbar(p12, cax=cbaxes)
-cb.set_label(r'$\mathrm{Counts\, per\, hexbin}$')
+cb = plt.colorbar(p12, cax=cbaxes, ticks=[1e1, 1e3, 1e5])
+cbaxes.tick_params(direction='out', which='both', right='on', labelsize=22)
+cb.set_label(r'$\mathrm{Counts\, per\, hexbin}$', size=22)
 
 # Calculate median and 1-sigma for bulges #
 log10X = np.log10(Stellar_Mass)
@@ -419,10 +425,12 @@ ax1.annotate("", xy=(0.5, 0.07), xycoords='axes fraction', xytext=(0.8, 0.5),
              arrowprops=dict(arrowstyle="-", color='black', connectionstyle="arc3,rad=0"))
 
 ax3.annotate(r'$\mathrm{Stars}$', xy=(-0.5, 1.07), xycoords='axes fraction', xytext=(0.427, 1.4),
-             textcoords='axes fraction', arrowprops=dict(arrowstyle="-", color='black', connectionstyle="arc3,rad=0"))
+             textcoords='axes fraction', arrowprops=dict(arrowstyle="-", color='black', connectionstyle="arc3,rad=0"),
+             size=22)
 
 ax3.annotate(r'$\mathrm{Stars}$', xy=(1.5, 1.07), xycoords='axes fraction', xytext=(0.427, 1.4),
-             textcoords='axes fraction', arrowprops=dict(arrowstyle="-", color='black', connectionstyle="arc3,rad=0"))
+             textcoords='axes fraction', arrowprops=dict(arrowstyle="-", color='black', connectionstyle="arc3,rad=0"),
+             size=22)
 
 ax3.annotate("", xy=(0.6, 0.07), xycoords='axes fraction', xytext=(0.25, 0.5),
              arrowprops=dict(arrowstyle="-", color='black', connectionstyle="arc3,rad=0"))
@@ -433,23 +441,23 @@ ax8.annotate("", xy=(0.6, 0.07), xycoords='axes fraction', xytext=(0.25, 0.5),
 ax6.annotate("", xy=(0.5, 0.07), xycoords='axes fraction', xytext=(0.8, 0.5), textcoords='axes fraction',
              arrowprops=dict(arrowstyle="-", color='black', connectionstyle="arc3,rad=0"))
 
-ax2.annotate(r'$\mathrm{(1,2)}$', xy=(0.83, 0.7), xycoords='axes fraction', size=17)
-ax2.annotate(r'$\mathrm{Bulge}$', xy=(0.431, 1.01), xycoords='axes fraction', color='red', size=17)
+ax2.annotate(r'$\mathrm{(1,2)}$', xy=(0.83, 0.7), xycoords='axes fraction', size=22)
+ax2.annotate(r'$\mathrm{Bulge}$', xy=(0.431, 1.01), xycoords='axes fraction', color='red', size=22)
 
-ax4.annotate(r'$\mathrm{(1,4)}$', xy=(0.83, 0.7), xycoords='axes fraction', size=17)
-ax4.annotate(r'$\mathrm{Disc}$', xy=(0.444, 1.01), xycoords='axes fraction', color='blue', size=17)
+ax4.annotate(r'$\mathrm{(1,4)}$', xy=(0.83, 0.7), xycoords='axes fraction', size=22)
+ax4.annotate(r'$\mathrm{Disc}$', xy=(0.444, 1.01), xycoords='axes fraction', color='blue', size=22)
 
-ax5.annotate(r'$\mathrm{(2,1)}$', xy=(0.83, 0.7), xycoords='axes fraction', size=17)
-ax5.annotate(r'$\mathrm{Pseudo}$', xy=(0.417, 1.01), xycoords='axes fraction', color='green', size=17)
+ax5.annotate(r'$\mathrm{(2,1)}$', xy=(0.83, 0.7), xycoords='axes fraction', size=22)
+ax5.annotate(r'$\mathrm{Pseudo}$', xy=(0.417, 1.01), xycoords='axes fraction', color='green', size=22)
 
-ax7.annotate(r'$\mathrm{(2,3)}$', xy=(0.83, 0.7), xycoords='axes fraction', size=17)
-ax7.annotate(r'$\mathrm{Classical}$', xy=(0.495, 1.01), xycoords='axes fraction', color='orange', size=17)
+ax7.annotate(r'$\mathrm{(2,3)}$', xy=(0.83, 0.7), xycoords='axes fraction', size=22)
+ax7.annotate(r'$\mathrm{Classical}$', xy=(0.495, 1.01), xycoords='axes fraction', color='orange', size=22)
 
-ax10.annotate(r'$\mathrm{(3,2)}$', xy=(0.83, 0.7), xycoords='axes fraction', size=17)
-ax10.annotate(r'$\mathrm{Minor}$', xy=(0.434, 1.01), xycoords='axes fraction', color='magenta', size=17)
+ax10.annotate(r'$\mathrm{(3,2)}$', xy=(0.83, 0.7), xycoords='axes fraction', size=22)
+ax10.annotate(r'$\mathrm{Minor}$', xy=(0.434, 1.01), xycoords='axes fraction', color='magenta', size=22)
 
-ax12.annotate(r'$\mathrm{(3,4)}$', xy=(0.83, 0.7), xycoords='axes fraction', size=17)
-ax12.annotate(r'$\mathrm{Major}$', xy=(0.518, 1.01), xycoords='axes fraction', color='cyan', size=17)
+ax12.annotate(r'$\mathrm{(3,4)}$', xy=(0.83, 0.7), xycoords='axes fraction', size=22)
+ax12.annotate(r'$\mathrm{Major}$', xy=(0.518, 1.01), xycoords='axes fraction', color='cyan', size=22)
 
 ######################################################################################################################################################
 

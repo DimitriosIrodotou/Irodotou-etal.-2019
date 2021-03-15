@@ -1,5 +1,5 @@
 # Path to the output folder #
-OutputPath = '/Volumes/BAM-BLACK/output/'
+OutputPath = '/Volumes/BAM-BLACK/output/output_ITH/'
 
 # Define the number of tree files, their name and snap number #
 firstFile = 0

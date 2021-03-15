@@ -27,8 +27,10 @@ Ratio = np.divide(ColdGas_Spin, Halo_Spin)
 weights = np.ones_like(Ratio) / float(len(ColdGas_Spin / Halo_Spin))
 plt.hist(Ratio, range=(0, 2), bins=50, color="black", density='True', alpha=0.6, edgecolor='None')
 
-MeanArrow = plt.arrow(np.mean(Ratio), 0.25, 0, -0.25, length_includes_head=True, head_width=0.05, head_length=0.1, ec='red', fc='red')
-MedianArrow = plt.arrow(np.median(Ratio), 0.25, 0, -0.25, length_includes_head=True, head_width=0.05, head_length=0.1, ec='blue', fc='blue')
+MeanArrow = plt.arrow(np.mean(Ratio), 0.25, 0, -0.25, length_includes_head=True, head_width=0.05, head_length=0.1,
+                      ec='red', fc='red')
+MedianArrow = plt.arrow(np.median(Ratio), 0.25, 0, -0.25, length_includes_head=True, head_width=0.05, head_length=0.1,
+                        ec='blue', fc='blue')
 
 
 def make_legend_arrow(legend, orig_handle, xdescent, ydescent, width, height, fontsize):
@@ -37,7 +39,7 @@ def make_legend_arrow(legend, orig_handle, xdescent, ydescent, width, height, fo
 
 
 plt.legend([MeanArrow, MedianArrow], [r'$\mathrm{Mean}$', r'$\mathrm{Median}$'],
-           handler_map={mpatches.FancyArrow: HandlerPatch(patch_func=make_legend_arrow)}, frameon=False, loc=1)
+           handler_map={mpatches.FancyArrow:HandlerPatch(patch_func=make_legend_arrow)}, frameon=False, loc=1)
 
 ######################################################################################################################################################
 
@@ -51,10 +53,12 @@ mark_inset(ax, axins, loc1=2, loc2=4, fc="none", ec="0.1")
 weights = np.ones_like(Ratio) / float(len(ColdGas_Spin / Halo_Spin))
 axins.hist(Ratio, range=(0, 2), bins=50, color="black", density='True', alpha=0.6, edgecolor='None')
 
-MeanArrow = axins.arrow(np.mean(Ratio), 0.25, 0, -0.25, length_includes_head=True, head_width=0.005, head_length=0.1, ec='red', fc='red')
-MedianArrow = axins.arrow(np.median(Ratio), 0.25, 0, -0.25, length_includes_head=True, head_width=0.005, head_length=0.1, ec='blue', fc='blue')
+MeanArrow = axins.arrow(np.mean(Ratio), 0.25, 0, -0.25, length_includes_head=True, head_width=0.005, head_length=0.1,
+                        ec='red', fc='red')
+MedianArrow = axins.arrow(np.median(Ratio), 0.25, 0, -0.25, length_includes_head=True, head_width=0.005,
+                          head_length=0.1, ec='blue', fc='blue')
 
 ######################################################################################################################################################
 
 # Save the figure #
-plt.savefig('PDF-58' + date + '.png', bbox_inches='tight')
+plt.savefig('PDF-58' + date + '.pdf', bbox_inches='tight')

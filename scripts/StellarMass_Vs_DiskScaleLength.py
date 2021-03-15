@@ -17,9 +17,9 @@ plt.xscale('log')
 plt.yscale('log')
 plt.xlim(1e9, 1e12)
 plt.ylim(6e-1, 1e1)
-plt.xlabel(r'$\mathrm{M_{\bigstar} / M_{\odot}}$')
-plt.ylabel(r'$\mathrm{R_{disc} / kpc}$')
-plt.tick_params(direction='in', which='both', top='on', right='on')
+plt.xlabel(r'$\mathrm{M_{\bigstar} / M_{\odot}}$',size=25)
+plt.ylabel(r'$\mathrm{R_{disc} / kpc}$',size=25)
+plt.tick_params(direction='in', which='both', top='on', right='on', labelsize=25)
 
 ######################################################################################################################################################
 
@@ -29,7 +29,7 @@ G09 = np.genfromtxt('./Obs_Data/G09.txt', delimiter=';', skip_header=1,
                            ('Mb', 'f8'), ('Md', 'f8')])
 
 # Plot observational data from G09 #
-scatter = plt.scatter(G09['Md'] + G09['Mb'], G09['h'], c=G09['BtoT'], edgecolor='black', cmap='RdYlBu_r', s=size, zorder=2)
+scatter = plt.scatter(G09['Md'] + G09['Mb'], G09['h'], c=G09['BtoT'], edgecolor='black', cmap='RdYlBu_r', s=50, zorder=2)
 
 # Trim the data #
 index = np.where((BulgeMass >= 0.0 * StellarMass) & (BulgeMass <= 0.2 * StellarMass))
@@ -141,6 +141,7 @@ plt.gca().add_artist(legend1)
 
 cbaxes = figure.add_axes([0.9, 0.11, 0.02, 0.77])
 cb = plt.colorbar(scatter, cax=cbaxes)
+cbaxes.tick_params(direction='out', which='both', right='on', labelsize=25)
 cb.set_label(r'$\mathrm{B/T}$')
 
 ######################################################################################################################################################

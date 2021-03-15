@@ -3,9 +3,10 @@ DiskMass = np.load(SavePath + 'DiskMass.npy')
 StellarMass = np.load(SavePath + 'StellarMass.npy')
 SHMR = np.load(SavePath + 'StellarHalfMassRadius.npy')
 
-DiskMassHWT15 = np.load(SavePath + 'HWT15/' + 'DiskMass.npy')
-StellarMassHWT15 = np.load(SavePath + 'HWT15/' + 'StellarMass.npy')
-SHMRHWT15 = np.load(SavePath + 'HWT15/' + 'StellarHalfMassRadius.npy')
+SavePath = '/Volumes/BAM-BLACK/output/output_ITH_Off/58/'
+DiskMassHWT15 = np.load(SavePath + 'DiskMass.npy')
+StellarMassHWT15 = np.load(SavePath + 'StellarMass.npy')
+SHMRHWT15 = np.load(SavePath + 'StellarHalfMassRadius.npy')
 
 # Trim the data #
 index = np.where(DiskMass > 0.7 * StellarMass)
@@ -24,7 +25,7 @@ dlog10 = 0.3
 plt.close()
 figure, ax = plt.subplots()
 figure, (ax1, ax2) = plt.subplots(ncols=2, figsize=(20, 7.5))
-figure.subplots_adjust(hspace=0, wspace=0.3)
+figure.subplots_adjust(hspace=0, wspace=0.37)
 
 # Figure parameters #
 ax1.set_xscale('log')
@@ -37,14 +38,14 @@ ax2.set_xlim(1e9, 1e12)
 ax1.set_ylim(1e-1, 1e2)
 ax2.set_ylim(1e-1, 1e2)
 
-ax1.set_ylabel(r'$\mathrm{R_{HM} / kpc}$')
-ax2.set_ylabel(r'$\mathrm{R_{HM} / kpc}$')
-ax1.set_xlabel(r'$\mathrm{M_{\bigstar} / M_{\odot}}$')
-ax2.set_xlabel(r'$\mathrm{M_{\bigstar} / M_{\odot}}$')
+ax1.set_ylabel(r'$\mathrm{R_{HM} / kpc}$', size=25)
+ax2.set_ylabel(r'$\mathrm{R_{HM} / kpc}$', size=25)
+ax1.set_xlabel(r'$\mathrm{M_{\bigstar} / M_{\odot}}$', size=25)
+ax2.set_xlabel(r'$\mathrm{M_{\bigstar} / M_{\odot}}$', size=25)
 
 ax1.set_xticklabels([])
-ax1.tick_params(direction='in', which='both', top='on', right='on')
-ax2.tick_params(direction='in', which='both', top='on', right='on')
+ax1.tick_params(direction='in', which='both', top='on', right='on', labelsize=25)
+ax2.tick_params(direction='in', which='both', top='on', right='on', labelsize=25)
 
 ######################################################################################################################################################
 
@@ -59,28 +60,33 @@ ZY17 = np.genfromtxt('./Obs_Data/ZY17Mass_Blue.csv', delimiter=',', names=['Msta
 KCR17SR = np.genfromtxt('./Obs_Data/KCR17SR.csv', delimiter=',', names=['Mstar', 'R50'])
 
 # Plot observational data from SMW03, ZY17,SRD18 and KCR17SR #
-scatter1 = ax1.errorbar(np.power(10, SMW03LTGsm['Mstar']), SMW03LTGsm['R50'], yerr=(ybot, ytop), color='blue', marker='o', linestyle="None",
-                        elinewidth=2, capsize=8, capthick=2, zorder=3)
-scatter2 = ax1.scatter(np.power(10, ZY17['Mstar']) / hubble ** 2, ZY17['R50'], edgecolor='black', color='lime', s=size, marker='p', zorder=2)
+scatter1 = ax1.errorbar(np.power(10, SMW03LTGsm['Mstar']), SMW03LTGsm['R50'], yerr=(ybot, ytop), color='blue',
+                        marker='o', linestyle="None", elinewidth=2, capsize=8, capthick=2, zorder=3)
+scatter2 = ax1.scatter(np.power(10, ZY17['Mstar']) / hubble ** 2, ZY17['R50'], edgecolor='black', color='lime', s=50,
+                       marker='p', zorder=2)
 # scatter3 = ax1.scatter(np.power(10, SRD18['Mstar']), SRD18['R50'], color='blue', s=size, marker='*', zorder=2)
-scatter4 = ax1.scatter(np.power(10, KCR17SR['Mstar']), np.power(10, KCR17SR['R50']), edgecolor='black', color='red', s=size, marker='^', zorder=2)
+scatter4 = ax1.scatter(np.power(10, KCR17SR['Mstar']), np.power(10, KCR17SR['R50']), edgecolor='black', color='red',
+                       s=50, marker='^', zorder=2)
 
 # Plot L-Galaxies data - 2D histogram #
-hexbin = ax1.hexbin(Stellar_Mass, S_H_M_R, xscale='log', yscale='log', bins='log', cmap='Greys', mincnt=mc)
+hexbin = ax1.hexbin(Stellar_Mass, S_H_M_R, xscale='log', yscale='log', bins='log', cmap='Greys', mincnt=2)
 
 # Adjust the color bar #
-cbaxes = figure.add_axes([0.462, 0.11, 0.01, 0.77])
+cbaxes = figure.add_axes([0.452, 0.11, 0.01, 0.77])
 cb = plt.colorbar(hexbin, cax=cbaxes)
-cb.set_label('$\mathrm{Counts\; per\; hexbin}$')
+cbaxes.tick_params(direction='out', which='both', right='on', labelsize=25)
+cb.set_label('$\mathrm{Counts\; per\; hexbin}$', size=25)
 
 # Create the legends #
-legend1 = ax1.legend([scatter1, scatter2, scatter4], [r'$\mathrm{Shen+03}$', r'$\mathrm{Zhang+19}$', r'$\mathrm{Kalinova+17(SR)}$'], frameon=False,
-                     loc=4, scatterpoints=sp)
+legend1 = ax1.legend([scatter1, scatter2, scatter4],
+                     [r'$\mathrm{Shen+03}$', r'$\mathrm{Zhang+19}$', r'$\mathrm{Kalinova+17(SR)}$'], frameon=False,
+                     loc=4, scatterpoints=3)
 
 colors = ['black', 'grey', 'lightgrey']
 squares = collections.RegularPolyCollection(numsides=6, sizes=(20,), facecolors=colors)
-legend2 = ax1.legend([squares], [r'$\mathrm{This\;work:M_{d,\bigstar} / M_{\bigstar}> 0.7}$'], scatterpoints=len(colors), scatteryoffsets=[.5],
-                     handlelength=len(colors), markerscale=2, frameon=False, loc=2)
+legend2 = ax1.legend([squares], [r'$\mathrm{This\;work:M_{d,\bigstar} / M_{\bigstar}> 0.7}$'],
+                     scatterpoints=len(colors), scatteryoffsets=[.5], handlelength=len(colors), markerscale=2,
+                     frameon=False, loc=2)
 
 ax1.add_artist(legend1)
 ax1.add_artist(legend2)
@@ -112,7 +118,9 @@ ax2.fill_between(X, shigh, slow, color='black', alpha=0.5)
 fill, = plt.fill(np.NaN, np.NaN, color='black', alpha=0.5)
 
 # Create the legends #
-legend3 = ax2.legend([median, fill], [r'$\mathrm{This\; work: Median}$', r'$\mathrm{This\; work:16^{th}-84^{th}\,\%ile}$'], frameon=False, loc=2)
+legend3 = ax2.legend([median, fill],
+                     [r'$\mathrm{This\; work: Median}$', r'$\mathrm{This\; work:16^{th}-84^{th}\,\%ile}$'],
+                     frameon=False, loc=2)
 
 # Read observational data from BDL11L and LDR15L #
 BDL11Lm = np.genfromtxt('./Obs_Data/BDL11Lm.csv', delimiter=',', names=['Mstar', 'R50'])
@@ -159,8 +167,10 @@ class AnyObjectHandler(HandlerBase):
         return [l1, l2, l3]
 
 
-legend4 = ax2.legend([object, line1, line2], [r'$\mathrm{Baldry+12:Fit\; &\; 1\operatorname{-}\sigma}$', r'$\mathrm{Lange+15:Single\; p.l.}$',
-                                              r'$\mathrm{Lange+15:Double\; p.l.}$'], handler_map={object: AnyObjectHandler()}, frameon=False, loc=4)
+legend4 = ax2.legend([object, line1, line2],
+                     [r'$\mathrm{Baldry+12:Fit\; &\; 1\operatorname{-}\sigma}$', r'$\mathrm{Lange+15:Single\; p.l.}$',
+                      r'$\mathrm{Lange+15:Double\; p.l.}$'], handler_map={object:AnyObjectHandler()}, frameon=False,
+                     loc=4)
 
 legend5 = ax2.legend([medianHWT15], [r'$\mathrm{HWT15: Median}$'], frameon=False, loc=1)
 
@@ -171,4 +181,4 @@ ax2.add_artist(legend5)
 ######################################################################################################################################################
 
 # Save the figure #
-plt.savefig('SM_Vs_SHMR_LTGs_55-' + date + '.png', bbox_inches='tight')
+plt.savefig('SM_Vs_SHMR_LTGs_55-' + date + '.pdf', bbox_inches='tight')

@@ -53,28 +53,28 @@ print("--- %s seconds ---" % (time.time() - start_time))
 ######################################################################################################################################################
 # Define the desired snap, read the data and save them at SavePath #
 snap = '58'
-SavePath = './L-Galaxies_Data/' + snap + '/'
-SavePath = '/Volumes/BAM-BLACK/output/output_ITH19/Crad_1_f_08_inter_15/' + snap + '/'
+# SavePath = './L-Galaxies_Data/' + snap + '/'
+SavePath = '/Volumes/BAM-BLACK/output/output_variants/Crad_1_f_08_inter_15/' + snap + '/'
 # exec(open("All_Data_58.py").read())
 
 # exec (open("PDF.py").read())
 # exec (open("SMF.py").read())
 # exec (open("SMF_Morph.py").read())
-# exec (open("Tully_Fisher.py").read())
+# exec(open("Tully_Fisher.py").read())
 # exec (open("Galaxy_Fraction.py").read())
-# exec (open("DiskMass_Vs_DiskSpin.py").read())
+# exec(open("DiskMass_Vs_DiskSpin.py").read())
 # exec (open("DiskMass_Vs_DiskSpin2.py").read())
 # exec (open("StellarMass_Vs_HaloMass.py").read())
-exec(open("StellarMass_Decomposition.py").read())
+# exec(open("StellarMass_Decomposition.py").read())
 # exec (open("HaloMass_Vs_GasToHaloSpin.py").read())
 # exec(open("HaloSpin_Vs_DiskSpin.py").read())
-# exec (open("HaloMass_Vs_DiskToHaloSpin.py").read())
-# exec (open("BulgeMass_Vs_BlackHoleMass.py").read())
+# exec(open("HaloMass_Vs_DiskToHaloSpin.py").read())
+# exec(open("BulgeMass_Vs_BlackHoleMass.py").read())
 # exec (open("StellarMass_Vs_GalacticSpin.py").read())
 
 # Define the desired snap, read the data and save them at SavePath #
 # snap = '56'
-# SavePath = './L-Galaxies_Data/' + snap + '/'
+# SavePath = '/Volumes/BAM-BLACK/output/output_variants/Crad_1_f_08_inter_15/' + snap + '/'
 # exec (open("All_Data_56.py").read())
 
 # exec (open("DiskMass_Vs_PseudoBulgeMass.py").read())
@@ -83,7 +83,7 @@ exec(open("StellarMass_Decomposition.py").read())
 
 # Define the desired snap, read the data and save them at SavePath #
 # snap = '55'
-# SavePath = './L-Galaxies_Data/' + snap + '/'
+# SavePath = '/Volumes/BAM-BLACK/output/output_variants/Crad_1_f_08_inter_15/' + snap + '/'
 # exec (open("All_Data_55.py").read())
 
 # exec (open("StellarMass_Vs_HalfMassRadius_ETGs.py").read())
@@ -94,7 +94,7 @@ exec(open("StellarMass_Decomposition.py").read())
 # SnapList = ['58', '38', '30', '25']
 # for i in range(0, 4):
 #     snap = SnapList[i]
-#     SavePath = './L-Galaxies_Data/Evo/' + snap + '/'
+#     SavePath = '/Volumes/BAM-BLACK/output/output_variants/Crad_1_f_08_inter_15/Evo/' + snap + '/'
 #     exec (open("All_Data_Evo.py").read())
 #     exec (open("StellarMass_Decomposition_Evo.py").read())
 

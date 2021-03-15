@@ -1,5 +1,5 @@
 # Load data arrays #
-sfr = np.load(SavePath + 'sfr.npy')
+sfr = np.load(SavePath + 'Sfr.npy')
 Vmax = np.load(SavePath + 'Vmax.npy')
 Type = np.load(SavePath + 'Type.npy')
 ColdGas = np.load(SavePath + 'ColdGas.npy')
@@ -23,13 +23,13 @@ if snap == '58':
     ax1.set_xlim(1.6, 3.0)
     ax2.set_xlim(1.6, 3.0)
 
-    ax1.set_xlabel(r'$\mathrm{log_{10}(V_{c} / (km \cdot s^{-1}))}$')
-    ax2.set_xlabel(r'$\mathrm{log_{10}(V_{c} / (km \cdot s^{-1}))}$')
-    ax1.set_ylabel(r'$\mathrm{log_{10}((M_{\bigstar} + M_{d,gas}) / M_{\odot})}$')
-    ax2.set_ylabel(r'$\mathrm{log_{10}((M_{\bigstar} + M_{d,gas}) / M_{\odot})}$')
+    ax1.set_xlabel(r'$\mathrm{log_{10}(V_{c} / (km \cdot s^{-1}))}$', size=25)
+    ax2.set_xlabel(r'$\mathrm{log_{10}(V_{c} / (km \cdot s^{-1}))}$', size=25)
+    ax1.set_ylabel(r'$\mathrm{log_{10}((M_{\bigstar} + M_{d,gas}) / M_{\odot})}$', size=25)
+    ax2.set_ylabel(r'$\mathrm{log_{10}((M_{\bigstar} + M_{d,gas}) / M_{\odot})}$', size=25)
 
-    ax1.tick_params(direction='in', which='both', top='on', right='on')
-    ax2.tick_params(direction='in', which='both', top='on', right='on')
+    ax1.tick_params(direction='in', which='both', top='on', right='on', labelsize=25)
+    ax2.tick_params(direction='in', which='both', top='on', right='on', labelsize=25)
 
     ##################################################################################################################################################
 
@@ -43,26 +43,27 @@ if snap == '58':
     McGaugh12 = np.genfromtxt('./Obs_Data/McGaugh12.csv', delimiter=',', names=['x', 's', 'g'])
 
     # Plot observational data from McGaugh12 #
-    ax1.scatter(np.log10(McGaugh12['x']), np.log10(np.power(10, McGaugh12['s']) + np.power(10, McGaugh12['g'])), edgecolor='black', color='red',
-                s=size, marker='^', label=r'$\mathrm{McGaugh12}$', zorder=2)
+    ax1.scatter(np.log10(McGaugh12['x']), np.log10(np.power(10, McGaugh12['s']) + np.power(10, McGaugh12['g'])),
+                edgecolor='black', color='red', s=50, marker='^', label=r'$\mathrm{McGaugh12}$', zorder=2)
 
     # Plot L-Galaxies data - 2D histogram #
-    h = ax1.hexbin(np.log10(V_max), np.log10(Baryons), bins='log', cmap='Greys', gridsize=gs, mincnt=mc)
+    h = ax1.hexbin(np.log10(V_max), np.log10(Baryons), bins='log', cmap='Greys', mincnt=2)
 
     # Adjust the color bar #
     cbaxes = figure.add_axes([0.9, 0.53, 0.02, 0.35])
     cb = plt.colorbar(h, cax=cbaxes)
-    cb.set_label('$\mathrm{Counts\; per\; hexbin}$')
+    cbaxes.tick_params(direction='out', which='both', right='on', labelsize=25)
+    cb.set_label('$\mathrm{Counts\; per\; hexbin}$', size=25)
 
     # Create the legends #
     colors = ['black', 'grey', 'lightgrey']
     squares = collections.RegularPolyCollection(numsides=6, sizes=(20,), facecolors=colors)
-    legend1 = ax1.legend([squares], [r'$\mathrm{This\; work:M_{d,gas} > M_{\bigstar}}$'], scatterpoints=len(colors), scatteryoffsets=[.5],
-                         handlelength=len(colors), markerscale=2, frameon=False, loc=2)
+    legend1 = ax1.legend([squares], [r'$\mathrm{This\; work:M_{d,gas} > M_{\bigstar}}$'], scatterpoints=len(colors),
+                         scatteryoffsets=[.5], handlelength=len(colors), markerscale=2, frameon=False, loc=2)
 
     ax1.add_artist(legend1)
     # ax1.add_artist(legend2)
-    ax1.legend(frameon=False, scatterpoints=sp, loc=4)
+    ax1.legend(frameon=False, scatterpoints=3, loc=4)
 
     ##################################################################################################################################################
 
@@ -78,27 +79,31 @@ if snap == '58':
     AVS18 = np.genfromtxt('./Obs_Data/AVS18.csv', delimiter=',', names=['x', 'y'])
 
     # Plot observational data from AZF08, AVS18 #
-    ax2.scatter(AZF08['y'], AZF08['x'], edgecolor='black', color='lime', s=size, zorder=2, label=r'$\mathrm{Avila-Reese+08}$')
-    ax2.scatter(TEA11['x'], TEA11['y'], edgecolor='black', color='blue', s=size, marker='s', zorder=2, label=r'$\mathrm{Torres-Flores+11}$')
+    ax2.scatter(AZF08['y'], AZF08['x'], edgecolor='black', color='lime', s=50, zorder=2,
+                label=r'$\mathrm{Avila-Reese+08}$')
+    ax2.scatter(TEA11['x'], TEA11['y'], edgecolor='black', color='blue', s=50, marker='s', zorder=2,
+                label=r'$\mathrm{Torres-Flores+11}$')
 
     # Plot L-Galaxies data - 2D histogram #
-    hexbin = ax2.hexbin(np.log10(V_max), np.log10(Baryons), bins='log', cmap='Greys', gridsize=gs, mincnt=mc)
+    hexbin = ax2.hexbin(np.log10(V_max), np.log10(Baryons), bins='log', cmap='Greys', mincnt=2)
     # Adjust the color bar #
     cbaxes = figure.add_axes([0.9, 0.11, 0.02, 0.35])
     cb = plt.colorbar(hexbin, cax=cbaxes)
-    cb.set_label('$\mathrm{Counts\; per\; hexbin}$')
+    cbaxes.tick_params(direction='out', which='both', right='on', labelsize=25)
+    cb.set_label('$\mathrm{Counts\; per\; hexbin}$', size=25)
 
     # Create the legends #
     colors = ['black', 'grey', 'lightgrey']
     squares = collections.RegularPolyCollection(numsides=6, sizes=(20,), facecolors=colors)
-    legend3 = ax2.legend([squares], [r'$\mathrm{This\; work:M_{d,\bigstar}/M_{\bigstar}>0.7}$'], scatterpoints=len(colors), scatteryoffsets=[.5],
-                         handlelength=len(colors), markerscale=2, frameon=False, loc=2)
+    legend3 = ax2.legend([squares], [r'$\mathrm{This\; work:M_{d,\bigstar}/M_{\bigstar}>0.7}$'],
+                         scatterpoints=len(colors), scatteryoffsets=[.5], handlelength=len(colors), markerscale=2,
+                         frameon=False, loc=2)
 
     ax2.add_artist(legend3)
-    ax2.legend(frameon=False, scatterpoints=sp, loc=4)
+    ax2.legend(frameon=False, scatterpoints=2, loc=4)
 
     # Save the figure #
-    plt.savefig('TF_58-' + date + '.png', bbox_inches='tight')
+    plt.savefig('TF_58-' + date + '.pdf', bbox_inches='tight')
 
 ######################################################################################################################################################
 #
@@ -142,9 +147,11 @@ if snap == '58':
 #     CBE05L07B = np.genfromtxt('./Obs_Data/CBE05L07B.csv', delimiter=',', names=['x', 'y'])
 #
 #     # Plot observational data from AZF08, AVS18 #
-#     ax1.plot(CBE05L07T['x'], CBE05L07T['y'], color='green', zorder=2, label=r'$\mathrm{Conselice+05}$', linestyle='dashed')
+#     ax1.plot(CBE05L07T['x'], CBE05L07T['y'], color='green', zorder=2, label=r'$\mathrm{Conselice+05}$',
+#     linestyle='dashed')
 #     ax1.plot(CBE05L07M['x'], CBE05L07M['y'], color='green', zorder=2, label=r'$\mathrm{Conselice+05}$')
-#     ax1.plot(CBE05L07B['x'], CBE05L07B['y'], color='green', zorder=2, label=r'$\mathrm{Conselice+05}$', linestyle='dashed')
+#     ax1.plot(CBE05L07B['x'], CBE05L07B['y'], color='green', zorder=2, label=r'$\mathrm{Conselice+05}$',
+#     linestyle='dashed')
 #
 #     # Plot L-Galaxies data - 2D histogram #
 #     h = ax1.hexbin(np.log10(V_max), np.log10(Stellar_Mass), bins='log', cmap='Greys', gridsize=gs, mincnt=mc)
@@ -157,7 +164,8 @@ if snap == '58':
 #     # Create the legends #
 #     colors = ['black', 'grey', 'lightgrey']
 #     squares = collections.RegularPolyCollection(numsides=6, sizes=(20,), facecolors=colors)
-#     legend1 = ax1.legend([squares], [r'$\mathrm{This\; work:M_{d,gas} > M_{\bigstar}}$'], scatterpoints=len(colors), scatteryoffsets=[.5],
+#     legend1 = ax1.legend([squares], [r'$\mathrm{This\; work:M_{d,gas} > M_{\bigstar}}$'], scatterpoints=len(
+#     colors), scatteryoffsets=[.5],
 #                          handlelength=len(colors), markerscale=2, frameon=False, loc=2)
 #
 #     ax1.add_artist(legend1)
@@ -191,7 +199,8 @@ if snap == '58':
 #     # Create the legends #
 #     colors = ['black', 'grey', 'lightgrey']
 #     squares = collections.RegularPolyCollection(numsides=6, sizes=(20,), facecolors=colors)
-#     legend3 = ax2.legend([squares], [r'$\mathrm{This\; work:M_{d,\bigstar}/M_{\bigstar}>0.7}$'], scatterpoints=len(colors), scatteryoffsets=[.5],
+#     legend3 = ax2.legend([squares], [r'$\mathrm{This\; work:M_{d,\bigstar}/M_{\bigstar}>0.7}$'], scatterpoints=len(
+#     colors), scatteryoffsets=[.5],
 #                          handlelength=len(colors), markerscale=2, frameon=False, loc=2)
 #
 #     ax2.add_artist(legend3)
@@ -212,7 +221,8 @@ if snap == '58':
 #     CHG09 = np.loadtxt('./Obs_Data/CHG09.txt')
 #
 #     # Plot observational data from McGaugh12 #
-#     ax3.scatter(np.log10(CHG09[:, 1]), np.log10(CHG09[:, 0] * 1e10), color='green', s=size, marker='^', label=r'$\mathrm{Cresci+09}$', zorder=2)
+#     ax3.scatter(np.log10(CHG09[:, 1]), np.log10(CHG09[:, 0] * 1e10), color='green', s=size, marker='^',
+#     label=r'$\mathrm{Cresci+09}$', zorder=2)
 #
 #     # Plot L-Galaxies data - 2D histogram #
 #     h = ax3.hexbin(np.log10(V_max), np.log10(Stellar_Mass), bins='log', cmap='Greys', gridsize=gs, mincnt=mc)
@@ -225,7 +235,8 @@ if snap == '58':
 #     # Create the legends #
 #     colors = ['black', 'grey', 'lightgrey']
 #     squares = collections.RegularPolyCollection(numsides=6, sizes=(20,), facecolors=colors)
-#     legend3 = ax3.legend([squares], [r'$\mathrm{This\; work:M_{d,gas} > M_{\bigstar}}$'], scatterpoints=len(colors), scatteryoffsets=[.5],
+#     legend3 = ax3.legend([squares], [r'$\mathrm{This\; work:M_{d,gas} > M_{\bigstar}}$'], scatterpoints=len(
+#     colors), scatteryoffsets=[.5],
 #                          handlelength=len(colors), markerscale=2, frameon=False, loc=2)
 #
 #     ax3.add_artist(legend3)
